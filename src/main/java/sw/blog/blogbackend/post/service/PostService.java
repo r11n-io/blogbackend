@@ -1,17 +1,17 @@
-package sw.blog.blogbackend.service;
+package sw.blog.blogbackend.post.service;
 
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import sw.blog.blogbackend.entity.Post;
-import sw.blog.blogbackend.repository.PostRepository;
+import sw.blog.blogbackend.post.entity.Post;
+import sw.blog.blogbackend.post.repository.PostRepository;
 
 @Service
 @Transactional(readOnly = true) // 읽기 전용
 public class PostService {
-    
+
     private final PostRepository postRepository;
 
     public PostService(PostRepository postRepository) {

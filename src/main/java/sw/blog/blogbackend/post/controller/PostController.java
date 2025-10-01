@@ -1,4 +1,4 @@
-package sw.blog.blogbackend.controller;
+package sw.blog.blogbackend.post.controller;
 
 import java.util.List;
 
@@ -9,10 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import sw.blog.blogbackend.entity.Post;
-import sw.blog.blogbackend.service.PostService;
-
-
+import sw.blog.blogbackend.post.entity.Post;
+import sw.blog.blogbackend.post.service.PostService;
 
 @RestController
 @RequestMapping("/api/post")
