@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Configuration
-@ConfigurationProperties(prefix = "jwt")  // jwt. 로 시작하는 설정 찾기
+@ConfigurationProperties(prefix = "jwt") // jwt. 로 시작하는 설정 찾기
 @Getter
 @Setter
 public class JwtConfig {
