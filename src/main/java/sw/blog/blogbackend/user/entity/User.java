@@ -23,7 +23,7 @@ import lombok.Setter;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Table(name = "users")
-public class User { 
+public class User {
   // 테이블명은 users 복수형, 엔티티 클래스는 단수형으로 사용하는 컨벤션 적용함
   // JPA 사용하는 경우 가장 일반적인 컨벤션이라고 함..
 
