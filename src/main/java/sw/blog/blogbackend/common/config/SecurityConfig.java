@@ -17,6 +17,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import lombok.RequiredArgsConstructor;
+import sw.blog.blogbackend.common.security.CustomAccessDeniedHandler;
 import sw.blog.blogbackend.common.security.CustomAuthenticationEntryPoint;
 import sw.blog.blogbackend.common.security.JwtAuthenticationFilter;
 
@@ -27,6 +28,7 @@ public class SecurityConfig {
 
   private final JwtAuthenticationFilter jwtAuthenticationFilter;
   private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+  private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
   @Bean
   @Order(1)
@@ -46,7 +48,10 @@ public class SecurityConfig {
             .requestMatchers(HttpMethod.PUT, "/api/posts/**").authenticated()
             .requestMatchers(HttpMethod.DELETE, "/api/posts/**").authenticated()
             .anyRequest().authenticated())
-        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+        .exceptionHandling(ex -> ex
+            .authenticationEntryPoint(customAuthenticationEntryPoint)
+            .accessDeniedHandler(customAccessDeniedHandler));
 
     return http.build();
   }
