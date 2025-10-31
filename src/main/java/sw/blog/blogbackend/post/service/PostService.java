@@ -2,9 +2,11 @@ package sw.blog.blogbackend.post.service;
 
 import java.util.List;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import sw.blog.blogbackend.post.dto.PostCreateRequest;
 import sw.blog.blogbackend.post.entity.Post;
 import sw.blog.blogbackend.post.repository.PostRepository;
 
@@ -20,9 +22,14 @@ public class PostService {
 
     // 1. 새 게시글 저장
     @Transactional
-    public Post createPost(String title, String content) {
-        // TODO: DTO 처리 예정
-        Post newPost = new Post(null, title, content, null);
+    public Post createPost(PostCreateRequest request) {
+        String principal = (String) SecurityContextHolder
+                .getContext().getAuthentication().getPrincipal();
+        Long currentUserId = Long.valueOf(principal);
+
+        Post newPost = new Post(currentUserId, request.getTitle(),
+                request.getContent(), null);
+
         return postRepository.save(newPost);
     }
 
@@ -35,6 +42,6 @@ public class PostService {
     public Post getPostById(Long id) {
         // ID가 없으면 예외를 발생시키거나 null을 반환
         return postRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다: " + id));
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다: " + id));
     }
 }
