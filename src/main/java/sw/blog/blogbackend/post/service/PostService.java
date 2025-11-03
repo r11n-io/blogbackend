@@ -2,7 +2,6 @@ package sw.blog.blogbackend.post.service;
 
 import java.util.List;
 
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,11 +22,12 @@ public class PostService {
     // 1. 새 게시글 저장
     @Transactional
     public Post createPost(PostCreateRequest request) {
-        String principal = (String) SecurityContextHolder
-                .getContext().getAuthentication().getPrincipal();
-        Long currentUserId = Long.valueOf(principal);
+        // 일단 백업
+        // UserPrincipal principal = (UserPrincipal) SecurityContextHolder
+        // .getContext().getAuthentication().getPrincipal();
+        // Long currentUserId = principal.getId();
 
-        Post newPost = new Post(currentUserId, request.getTitle(),
+        Post newPost = new Post(null, request.getTitle(),
                 request.getContent(), null);
 
         return postRepository.save(newPost);
