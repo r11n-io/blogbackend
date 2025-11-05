@@ -1,5 +1,6 @@
 package sw.blog.blogbackend.common.security;
 
+import java.time.Instant;
 import java.util.Date;
 
 import javax.crypto.SecretKey;
@@ -21,6 +22,7 @@ import sw.blog.blogbackend.common.config.JwtConfig;
 public class JwtTokenProvider {
 
   private final JwtConfig jwtConfig;
+  private final Long refreshTokenExpirationMs = 1000L * 60 * 60 * 24 * 7; // 7일
 
   public JwtTokenProvider(JwtConfig jwtConfig) {
     this.jwtConfig = jwtConfig;
@@ -34,13 +36,25 @@ public class JwtTokenProvider {
   }
 
   // Jwt 토큰 생성
-  public String generateToken(Authentication authentication) {
+  public String createAccessToken(Authentication authentication) {
     String userIdentifier = authentication.getName();
     Date now = new Date();
     Date expiryDate = new Date(now.getTime() + jwtConfig.getExpirationMs());
 
     return Jwts.builder()
         .setSubject(userIdentifier)
+        .setIssuedAt(now)
+        .setExpiration(expiryDate)
+        .signWith(getSigningKey(), SignatureAlgorithm.HS512)
+        .compact();
+  }
+
+  public String createAccessToken(String subject) {
+    Date now = new Date();
+    Date expiryDate = new Date(now.getTime() + jwtConfig.getExpirationMs());
+
+    return Jwts.builder()
+        .setSubject(subject)
         .setIssuedAt(now)
         .setExpiration(expiryDate)
         .signWith(getSigningKey(), SignatureAlgorithm.HS512)
@@ -80,5 +94,23 @@ public class JwtTokenProvider {
     }
 
     return false;
+  }
+
+  // 리프레쉬 토큰 생성
+  public String createRefreshToken(String subject) {
+    Date now = new Date();
+    Date expiryDate = new Date(now.getTime() + refreshTokenExpirationMs);
+
+    return Jwts.builder()
+        .setSubject(subject)
+        .setIssuedAt(now)
+        .setExpiration(expiryDate)
+        .signWith(getSigningKey(), SignatureAlgorithm.HS512)
+        .compact();
+  }
+
+  // 토큰 만료 시간 반환
+  public Instant getRefreshTokenExpiryDate() {
+    return Instant.now().plusMillis(refreshTokenExpirationMs);
   }
 }

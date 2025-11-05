@@ -1,4 +1,4 @@
-package sw.blog.blogbackend.login.dto;
+package sw.blog.blogbackend.auth.dto;
 
 import lombok.Data;
 import lombok.ToString;
