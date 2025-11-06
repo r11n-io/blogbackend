@@ -51,7 +51,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
       }
     } catch (Exception ex) {
-      // logger.error("Security Context에서 사용자 인증을 설정할 수 없습니다.", ex);
+      System.out.println("JWT validation error: " + ex.getMessage());
     }
 
     filterChain.doFilter(request, response);

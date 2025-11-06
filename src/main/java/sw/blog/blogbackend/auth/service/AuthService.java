@@ -55,8 +55,10 @@ public class AuthService {
 
     refreshTokenService.verifyExpiration(refreshToken);
 
-    String subject = String.valueOf(refreshToken.getUserId());
-    String newAccessToken = jwtTokenProvider.createAccessToken(subject);
+    @SuppressWarnings("null")
+    User user = userRepository.findById(refreshToken.getUserId())
+        .orElseThrow(() -> new BadCredentialsException("사용자가 테이블에 존재하지 않습니다."));
+    String newAccessToken = jwtTokenProvider.createAccessToken(user.getEmail());
 
     return new TokenResponse(
         newAccessToken,
