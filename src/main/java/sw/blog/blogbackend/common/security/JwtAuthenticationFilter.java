@@ -16,9 +16,11 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import sw.blog.blogbackend.common.security.service.CustomUserDetailService;
 
 @Component
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   private final JwtTokenProvider jwtTokenProvider;
@@ -51,7 +53,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
       }
     } catch (Exception ex) {
-      System.out.println("JWT validation error: " + ex.getMessage());
+      log.warn("JWT validation error :: {}", ex.getMessage());
     }
 
     filterChain.doFilter(request, response);

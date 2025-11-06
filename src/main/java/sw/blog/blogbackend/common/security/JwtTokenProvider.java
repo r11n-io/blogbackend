@@ -16,9 +16,11 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
+import lombok.extern.slf4j.Slf4j;
 import sw.blog.blogbackend.common.config.JwtConfig;
 
 @Component
+@Slf4j
 public class JwtTokenProvider {
 
   private final JwtConfig jwtConfig;
@@ -74,8 +76,6 @@ public class JwtTokenProvider {
 
   // JWT 토큰 유효성 검증
   public boolean validateToken(String authToken) {
-    // TODO: 로거 라이브러리 적용 로깅
-
     try {
       Jwts.parserBuilder()
           .setSigningKey(getSigningKey())
@@ -84,13 +84,13 @@ public class JwtTokenProvider {
 
       return true;
     } catch (SignatureException ex) {
-      System.out.println("서명 검증 실패 (시크릿 키 불일치)");
+      log.warn("서명 검증 실패 (시크릿 키 불일치)");
     } catch (MalformedJwtException ex) {
-      System.out.println("유효하지 않는 JWT 형식");
+      log.warn("유효하지 않는 JWT 형식");
     } catch (UnsupportedJwtException ex) {
-      System.out.println("지원되지 않는 JWT 형식");
+      log.warn("지원되지 않는 JWT 형식");
     } catch (IllegalArgumentException ex) {
-      System.out.println("JWT 클레임 문자열이 비어있음");
+      log.warn("JWT 클레임 문자열이 비어있음");
     }
 
     return false;

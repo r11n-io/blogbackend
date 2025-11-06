@@ -5,11 +5,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import sw.blog.blogbackend.user.entity.User;
 import sw.blog.blogbackend.user.repository.UserRepository;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class DataLoader implements CommandLineRunner {
 
   private final UserRepository userRepository;
@@ -27,7 +29,7 @@ public class DataLoader implements CommandLineRunner {
 
       userRepository.save(initUser);
 
-      System.out.println("테스트 계정 생성 완료 :: " + email);
+      log.debug("테스트 계정 생성 완료 :: {}", email);
     }
   }
 }
