@@ -55,8 +55,12 @@ public class AuthService {
 
     refreshTokenService.verifyExpiration(refreshToken);
 
-    @SuppressWarnings("null")
-    User user = userRepository.findById(refreshToken.getUserId())
+    Long userId = refreshToken.getUserId();
+    if (userId == null) {
+      throw new BadCredentialsException("Refresh token에 사용자ID가 누락되었습니다.");
+    }
+
+    User user = userRepository.findById(userId)
         .orElseThrow(() -> new BadCredentialsException("사용자가 테이블에 존재하지 않습니다."));
     String newAccessToken = jwtTokenProvider.createAccessToken(user.getEmail());
 
