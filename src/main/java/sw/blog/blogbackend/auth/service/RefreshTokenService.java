@@ -20,8 +20,14 @@ public class RefreshTokenService {
   private final JwtTokenProvider jwtTokenProvider;
 
   @Transactional
+  public void deleteExistingToken(Long userId) {
+    refreshTokenRepository.deleteByUserId(userId);
+  }
+
+  @Transactional
   public RefreshToken createAndSaveRefreshToken(Long userId) {
-    refreshTokenRepository.findByUserId(userId);
+    // refreshTokenRepository.deleteByUserId(userId);
+    deleteExistingToken(userId);
 
     String newRefreshToken = jwtTokenProvider.createRefreshToken(String.valueOf(userId));
     Instant expiryDate = jwtTokenProvider.getRefreshTokenExpiryDate();
