@@ -19,6 +19,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -26,6 +27,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Table(name = "posts")
@@ -45,16 +47,19 @@ public class Post {
 
   @CreatedDate
   @Column
+  @Builder.Default
   private LocalDateTime createAt = LocalDateTime.now();
 
   @Column(nullable = false)
   private String category;
 
   @Column(name = "is_private", nullable = false)
+  @Builder.Default
   private boolean isPrivate = false;
 
   @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
   @JoinTable(name = "post_tags", joinColumns = @JoinColumn(name = "post_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
+  @Builder.Default
   private Set<Tag> tags = new HashSet<>();
 
   public void addTag(Tag tag) {

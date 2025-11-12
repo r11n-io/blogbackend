@@ -10,5 +10,5 @@ import sw.blog.blogbackend.post.entity.Post;
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
 
-    List<Post> findAllByTitleContaining(String title);
+  List<Post> findAllByTitleContaining(String title);
 }
