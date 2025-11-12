@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import sw.blog.blogbackend.common.exception.ResourceNotFoundException;
 import sw.blog.blogbackend.post.dto.PostCreateRequest;
 import sw.blog.blogbackend.post.entity.Post;
 import sw.blog.blogbackend.post.entity.Tag;
@@ -75,6 +76,6 @@ public class PostService {
     }
 
     return postRepository.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다: " + id));
+        .orElseThrow(() -> new ResourceNotFoundException("게시글", id));
   }
 }
