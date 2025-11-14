@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import sw.blog.blogbackend.post.dto.PostCreateRequest;
+import sw.blog.blogbackend.post.dto.PostListResponse;
 import sw.blog.blogbackend.post.entity.Post;
 import sw.blog.blogbackend.post.service.PostService;
 
@@ -50,7 +51,7 @@ public class PostController {
   // [GET] 모든 게시글 목록 조회
   // GET http://localhost:8080/api/posts
   @GetMapping
-  public List<Post> getPosts() {
+  public List<PostListResponse> getPosts() {
     return postService.getAllPosts();
   }
 

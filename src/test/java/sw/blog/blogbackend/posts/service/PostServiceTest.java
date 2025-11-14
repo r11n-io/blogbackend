@@ -20,7 +20,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import sw.blog.blogbackend.common.exception.ResourceNotFoundException;
 import sw.blog.blogbackend.post.dto.PostCreateRequest;
+import sw.blog.blogbackend.post.dto.PostListResponse;
 import sw.blog.blogbackend.post.entity.Post;
 import sw.blog.blogbackend.post.entity.Tag;
 import sw.blog.blogbackend.post.repository.PostRepository;
@@ -119,7 +121,7 @@ public class PostServiceTest {
 
     when(postRepository.findAll()).thenReturn(mockPosts);
 
-    List<Post> actualPosts = postService.getAllPosts();
+    List<PostListResponse> actualPosts = postService.getAllPosts();
 
     assertThat(actualPosts).hasSize(2);
     assertThat(actualPosts.get(0).getTitle()).isEqualTo("게시글 1");
@@ -147,7 +149,7 @@ public class PostServiceTest {
 
     when(postRepository.findById(invalidId)).thenReturn(Optional.empty());
 
-    assertThrows(IllegalArgumentException.class, () -> {
+    assertThrows(ResourceNotFoundException.class, () -> {
       postService.getPostById(invalidId);
     });
     verify(postRepository, times(1)).findById(invalidId);

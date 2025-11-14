@@ -14,7 +14,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
-import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
@@ -35,22 +34,21 @@ public class Post {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column
+  @Column(name = "id")
   private Long id;
 
-  @Column(nullable = false)
-  private String title;
-
-  @Lob
-  @Column(nullable = false, columnDefinition = "TEXT")
+  @Column(name = "content", nullable = false, columnDefinition = "TEXT")
   private String content;
 
   @CreatedDate
-  @Column
+  @Column(name = "create_at")
   @Builder.Default
   private LocalDateTime createAt = LocalDateTime.now();
 
-  @Column(nullable = false)
+  @Column(name = "title", nullable = false)
+  private String title;
+
+  @Column(name = "category", nullable = false)
   private String category;
 
   @Column(name = "is_private", nullable = false)
@@ -58,6 +56,7 @@ public class Post {
   private boolean isPrivate = false;
 
   @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+  // TODO: 테이블명 둘 다 복수형으로 변경..
   @JoinTable(name = "post_tags", joinColumns = @JoinColumn(name = "post_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
   @Builder.Default
   private Set<Tag> tags = new HashSet<>();

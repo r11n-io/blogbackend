@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import sw.blog.blogbackend.common.exception.ResourceNotFoundException;
 import sw.blog.blogbackend.post.dto.PostCreateRequest;
+import sw.blog.blogbackend.post.dto.PostListResponse;
 import sw.blog.blogbackend.post.entity.Post;
 import sw.blog.blogbackend.post.entity.Tag;
 import sw.blog.blogbackend.post.repository.PostRepository;
@@ -65,8 +66,12 @@ public class PostService {
   }
 
   // 2. 전체 게시글 목록 조회
-  public List<Post> getAllPosts() {
-    return postRepository.findAll();
+  public List<PostListResponse> getAllPosts() {
+    List<Post> posts = postRepository.findAll();
+
+    return posts.stream()
+        .map(PostListResponse::from)
+        .collect(Collectors.toList());
   }
 
   // 3. 특정 게시글 상세 조회

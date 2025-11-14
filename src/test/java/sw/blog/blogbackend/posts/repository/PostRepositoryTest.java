@@ -1,9 +1,11 @@
 package sw.blog.blogbackend.posts.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -19,6 +21,7 @@ import sw.blog.blogbackend.post.entity.Tag;
 import sw.blog.blogbackend.post.repository.PostRepository;
 import sw.blog.blogbackend.post.repository.TagRepository;
 
+@SuppressWarnings("null")
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class PostRepositoryTest {
@@ -32,7 +35,28 @@ public class PostRepositoryTest {
   @Autowired
   private TestEntityManager testEntityManager;
 
-  @SuppressWarnings("null")
+  // private Long postId;
+
+  // @BeforeEach
+  // void setup() {
+  // Tag tag1 = new Tag("JUnit");
+  // Tag tag2 = new Tag("Spring");
+  // Set<Tag> tags = new HashSet<>(Arrays.asList(tag1, tag2));
+
+  // Post post = Post.builder()
+  // .id(999L)
+  // .title("테스트 제목")
+  // .content("테스트 콘텐츠")
+  // .category("TEST")
+  // .tags(tags)
+  // .build();
+
+  // Post savedPost = postRepository.saveAndFlush(post);
+  // postId = savedPost.getId();
+
+  // testEntityManager.clear();
+  // }
+
   @Test
   void givenPostWithTag_whenSaveAndFetch_thenRelationIsIntact() {
     Tag existingTag = new Tag("Spring boot");
@@ -70,6 +94,21 @@ public class PostRepositoryTest {
 
     assertThat(tagNames)
         .containsExactlyInAnyOrder("Spring boot", "Spring framework");
+  }
+
+  @Test
+  void findAll_withEntityGraph_shouldFetchTagsEagerly() {
+    // 미리 테이블에 넣어둔 데이터로 진행
+
+    List<Post> posts = postRepository.findAll();
+    Post fetchedPost = posts.stream()
+        .filter(p -> p.getId().equals(999L))
+        .findFirst()
+        .orElseThrow();
+
+    assertDoesNotThrow(() -> {
+      assertThat(fetchedPost.getTags()).hasSize(2);
+    });
   }
 
 }
