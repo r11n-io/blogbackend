@@ -1,10 +1,10 @@
-package sw.blog.blogbackend.post.repository;
+package sw.blog.blogbackend.tag.repository;
 
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import sw.blog.blogbackend.post.entity.Tag;
+import sw.blog.blogbackend.tag.entity.Tag;
 
 public interface TagRepository extends JpaRepository<Tag, Long> {
 

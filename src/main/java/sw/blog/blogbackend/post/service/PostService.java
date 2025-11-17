@@ -14,9 +14,9 @@ import sw.blog.blogbackend.common.exception.ResourceNotFoundException;
 import sw.blog.blogbackend.post.dto.PostCreateRequest;
 import sw.blog.blogbackend.post.dto.PostListResponse;
 import sw.blog.blogbackend.post.entity.Post;
-import sw.blog.blogbackend.post.entity.Tag;
 import sw.blog.blogbackend.post.repository.PostRepository;
-import sw.blog.blogbackend.post.repository.TagRepository;
+import sw.blog.blogbackend.tag.entity.Tag;
+import sw.blog.blogbackend.tag.repository.TagRepository;
 
 @Service
 @Transactional(readOnly = true) // 읽기 전용

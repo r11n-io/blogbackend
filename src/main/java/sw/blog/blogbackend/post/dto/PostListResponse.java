@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.Getter;
 import sw.blog.blogbackend.post.entity.Post;
-import sw.blog.blogbackend.post.entity.Tag;
+import sw.blog.blogbackend.tag.entity.Tag;
 
 @Builder
 @Getter

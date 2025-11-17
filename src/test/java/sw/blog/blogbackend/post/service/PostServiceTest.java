@@ -1,4 +1,4 @@
-package sw.blog.blogbackend.posts.service;
+package sw.blog.blogbackend.post.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -24,10 +24,9 @@ import sw.blog.blogbackend.common.exception.ResourceNotFoundException;
 import sw.blog.blogbackend.post.dto.PostCreateRequest;
 import sw.blog.blogbackend.post.dto.PostListResponse;
 import sw.blog.blogbackend.post.entity.Post;
-import sw.blog.blogbackend.post.entity.Tag;
 import sw.blog.blogbackend.post.repository.PostRepository;
-import sw.blog.blogbackend.post.repository.TagRepository;
-import sw.blog.blogbackend.post.service.PostService;
+import sw.blog.blogbackend.tag.entity.Tag;
+import sw.blog.blogbackend.tag.repository.TagRepository;
 
 @ExtendWith(MockitoExtension.class)
 public class PostServiceTest {

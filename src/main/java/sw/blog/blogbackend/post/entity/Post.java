@@ -22,6 +22,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import sw.blog.blogbackend.tag.entity.Tag;
 
 @Entity
 @Getter

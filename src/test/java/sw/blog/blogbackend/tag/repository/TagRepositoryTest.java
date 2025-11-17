@@ -1,4 +1,4 @@
-package sw.blog.blogbackend.posts.repository;
+package sw.blog.blogbackend.tag.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -10,8 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import sw.blog.blogbackend.post.entity.Tag;
-import sw.blog.blogbackend.post.repository.TagRepository;
+import sw.blog.blogbackend.tag.entity.Tag;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)

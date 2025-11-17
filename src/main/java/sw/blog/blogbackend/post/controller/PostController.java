@@ -29,8 +29,6 @@ public class PostController {
   private final PostService postService;
 
   // [POST] 새 게시글 등록
-  // POST http://localhost:8080/api/posts
-  // JSON {"title": "첫 번째 글", "content": "스프링 부트 블로그 프로젝트"}
   @SuppressWarnings("null")
   @PreAuthorize("isAuthenticated()")
   @PostMapping
@@ -49,14 +47,12 @@ public class PostController {
   }
 
   // [GET] 모든 게시글 목록 조회
-  // GET http://localhost:8080/api/posts
   @GetMapping
-  public List<PostListResponse> getPosts() {
-    return postService.getAllPosts();
+  public ResponseEntity<List<PostListResponse>> getPosts() {
+    return ResponseEntity.ok(postService.getAllPosts());
   }
 
   // [GET] 특정 게시글 상세 조회
-  // GET http:/localhost:8080/api/posts/1
   @GetMapping("/{postId}")
   public Post getPost(@PathVariable Long postId) {
     return postService.getPostById(postId);

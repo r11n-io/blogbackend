@@ -1,4 +1,4 @@
-package sw.blog.blogbackend.posts.repository;
+package sw.blog.blogbackend.post.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -17,9 +17,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import sw.blog.blogbackend.post.entity.Post;
-import sw.blog.blogbackend.post.entity.Tag;
-import sw.blog.blogbackend.post.repository.PostRepository;
-import sw.blog.blogbackend.post.repository.TagRepository;
+import sw.blog.blogbackend.tag.entity.Tag;
+import sw.blog.blogbackend.tag.repository.TagRepository;
 
 @SuppressWarnings("null")
 @DataJpaTest
@@ -34,28 +33,6 @@ public class PostRepositoryTest {
 
   @Autowired
   private TestEntityManager testEntityManager;
-
-  // private Long postId;
-
-  // @BeforeEach
-  // void setup() {
-  // Tag tag1 = new Tag("JUnit");
-  // Tag tag2 = new Tag("Spring");
-  // Set<Tag> tags = new HashSet<>(Arrays.asList(tag1, tag2));
-
-  // Post post = Post.builder()
-  // .id(999L)
-  // .title("테스트 제목")
-  // .content("테스트 콘텐츠")
-  // .category("TEST")
-  // .tags(tags)
-  // .build();
-
-  // Post savedPost = postRepository.saveAndFlush(post);
-  // postId = savedPost.getId();
-
-  // testEntityManager.clear();
-  // }
 
   @Test
   void givenPostWithTag_whenSaveAndFetch_thenRelationIsIntact() {
