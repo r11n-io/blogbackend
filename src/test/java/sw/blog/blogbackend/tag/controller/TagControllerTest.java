@@ -18,8 +18,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import sw.blog.blogbackend.common.security.JwtTokenProvider;
 import sw.blog.blogbackend.common.security.service.CustomUserDetailService;
 import sw.blog.blogbackend.tag.controllter.TagController;
@@ -33,8 +31,8 @@ public class TagControllerTest {
   @Autowired
   private MockMvc mockMvc;
 
-  @Autowired
-  private ObjectMapper objectMapper;
+  // @Autowired
+  // private ObjectMapper objectMapper;
 
   @MockBean
   private TagService tagService;

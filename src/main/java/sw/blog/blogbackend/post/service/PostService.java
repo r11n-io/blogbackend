@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -65,10 +66,10 @@ public class PostService {
     return tags;
   }
 
-  // 2. 전체 게시글 목록 조회
-  public List<PostListResponse> getAllPosts() {
-    List<Post> posts = postRepository.findAll();
-
+  // 2. 전체 게시글 목록 조회 (페이징)
+  public List<PostListResponse> getAllPosts(int page, int size) {
+    var pageable = PageRequest.of(page, size);
+    List<Post> posts = postRepository.findAll(pageable).getContent();
     return posts.stream()
         .map(PostListResponse::from)
         .collect(Collectors.toList());

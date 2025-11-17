@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
@@ -48,8 +49,10 @@ public class PostController {
 
   // [GET] 모든 게시글 목록 조회
   @GetMapping
-  public ResponseEntity<List<PostListResponse>> getPosts() {
-    return ResponseEntity.ok(postService.getAllPosts());
+  public ResponseEntity<List<PostListResponse>> getPosts(
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size) {
+    return ResponseEntity.ok(postService.getAllPosts(page, size));
   }
 
   // [GET] 특정 게시글 상세 조회

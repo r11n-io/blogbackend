@@ -19,6 +19,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import sw.blog.blogbackend.common.exception.ResourceNotFoundException;
 import sw.blog.blogbackend.post.dto.PostCreateRequest;
@@ -112,19 +115,21 @@ public class PostServiceTest {
     verify(tagRepository, never()).findByName(" ");
   }
 
+  @SuppressWarnings("null")
   @Test
-  void whenGetAllPosts_thenReturnAllPosts() {
+  void whenGetAllPostsWithPaging_thenReturnPagedPosts() {
     Post post1 = Post.builder().id(1L).title("게시글 1").content("Content 1").build();
     Post post2 = Post.builder().id(2L).title("게시글 2").content("Content 2").build();
     List<Post> mockPosts = Arrays.asList(post1, post2);
 
-    when(postRepository.findAll()).thenReturn(mockPosts);
+    Page<Post> mockPage = new PageImpl<>(mockPosts);
+    when(postRepository.findAll(any(Pageable.class))).thenReturn(mockPage);
 
-    List<PostListResponse> actualPosts = postService.getAllPosts();
+    List<PostListResponse> actualPosts = postService.getAllPosts(0, 10);
 
     assertThat(actualPosts).hasSize(2);
     assertThat(actualPosts.get(0).getTitle()).isEqualTo("게시글 1");
-    verify(postRepository, times(1)).findAll();
+    verify(postRepository, times(1)).findAll(any(Pageable.class));
   }
 
   @Test
