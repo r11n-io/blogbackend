@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -22,10 +23,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 import sw.blog.blogbackend.common.exception.ResourceNotFoundException;
 import sw.blog.blogbackend.post.dto.PostCreateRequest;
 import sw.blog.blogbackend.post.dto.PostListResponse;
+import sw.blog.blogbackend.post.dto.PostSearchCondition;
 import sw.blog.blogbackend.post.entity.Post;
 import sw.blog.blogbackend.post.repository.PostRepository;
 import sw.blog.blogbackend.tag.entity.Tag;
@@ -115,21 +118,43 @@ public class PostServiceTest {
     verify(tagRepository, never()).findByName(" ");
   }
 
-  @SuppressWarnings("null")
+  @SuppressWarnings({ "null", "unchecked" })
   @Test
   void whenGetAllPostsWithPaging_thenReturnPagedPosts() {
+    PostSearchCondition condition = PostSearchCondition.builder().build();
+    Pageable pageable = Pageable.ofSize(8).withPage(0);
     Post post1 = Post.builder().id(1L).title("게시글 1").content("Content 1").build();
     Post post2 = Post.builder().id(2L).title("게시글 2").content("Content 2").build();
     List<Post> mockPosts = Arrays.asList(post1, post2);
-
     Page<Post> mockPage = new PageImpl<>(mockPosts);
-    when(postRepository.findAll(any(Pageable.class))).thenReturn(mockPage);
 
-    List<PostListResponse> actualPosts = postService.getAllPosts(0, 10);
+    when(postRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(mockPage);
+
+    List<PostListResponse> actualPosts = postService.getAllPosts(condition, 0, 8);
 
     assertThat(actualPosts).hasSize(2);
     assertThat(actualPosts.get(0).getTitle()).isEqualTo("게시글 1");
-    verify(postRepository, times(1)).findAll(any(Pageable.class));
+    verify(postRepository, times(1)).findAll(any(Specification.class), eq(pageable));
+  }
+
+  @SuppressWarnings({ "unchecked", "null" })
+  @Test
+  void whenGetAllPostsWithCondition_thenReturnFilteredPosts() {
+    PostSearchCondition condition = PostSearchCondition.builder()
+        .keyword("Test").build();
+    Post post1 = Post.builder().id(1L).title("Test 게시글 1").content("Content 1").build();
+    Post post2 = Post.builder().id(2L).title("게시글 2").content("Test Content 2").build();
+    List<Post> mockPosts = Arrays.asList(post1, post2);
+    Page<Post> mockPage = new PageImpl<>(mockPosts);
+
+    when(postRepository.findAll(any(Specification.class), any(Pageable.class)))
+        .thenReturn(mockPage);
+
+    List<PostListResponse> actualPosts = postService.getAllPosts(condition, 0, 8);
+
+    assertThat(actualPosts).hasSize(2);
+    verify(postRepository, times(1))
+        .findAll(any(Specification.class), any(Pageable.class));
   }
 
   @Test
@@ -167,5 +192,34 @@ public class PostServiceTest {
         .isPrivate(false)
         .tags(tags)
         .build();
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  void whenGetAllPostsCount_thenReturnCorrectCount() {
+    PostSearchCondition condition = PostSearchCondition.builder().build();
+    long mockCount = 15L;
+
+    when(postRepository.count(any(Specification.class))).thenReturn(mockCount);
+
+    long actualCount = postService.getAllPostsCount(condition);
+
+    assertThat(actualCount).isEqualTo(mockCount);
+    verify(postRepository, times(1)).count(any(Specification.class));
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  void whenGetAllPostsCount_thenReturnCorrectCountWithSpecification() {
+    PostSearchCondition condition = PostSearchCondition.builder()
+        .keyword("Test").build();
+    long mockCount = 20L;
+
+    when(postRepository.count(any(Specification.class))).thenReturn(mockCount);
+
+    long actualCount = postService.getAllPostsCount(condition);
+
+    assertThat(actualCount).isEqualTo(mockCount);
+    verify(postRepository, times(1)).count(any(Specification.class));
   }
 }

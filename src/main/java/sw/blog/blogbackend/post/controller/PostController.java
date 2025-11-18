@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +20,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import sw.blog.blogbackend.post.dto.PostCreateRequest;
 import sw.blog.blogbackend.post.dto.PostListResponse;
+import sw.blog.blogbackend.post.dto.PostSearchCondition;
 import sw.blog.blogbackend.post.entity.Post;
 import sw.blog.blogbackend.post.service.PostService;
 
@@ -50,9 +52,10 @@ public class PostController {
   // [GET] 모든 게시글 목록 조회
   @GetMapping
   public ResponseEntity<List<PostListResponse>> getPosts(
+      @ModelAttribute PostSearchCondition condition,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "8") int size) {
-    return ResponseEntity.ok(postService.getAllPosts(page, size));
+    return ResponseEntity.ok(postService.getAllPosts(condition, page, size));
   }
 
   // [GET] 특정 게시글 상세 조회
@@ -61,6 +64,10 @@ public class PostController {
     return postService.getPostById(postId);
   }
 
-  // TODO: 게시글 총 건수 조회
-
+  // [GET] 게시글 총 건수 조회
+  @GetMapping("/count")
+  public ResponseEntity<Long> getPostsCount(
+      @ModelAttribute PostSearchCondition condition) {
+    return ResponseEntity.ok(postService.getAllPostsCount(condition));
+  }
 }
