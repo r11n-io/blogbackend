@@ -51,7 +51,7 @@ public class PostController {
   @GetMapping
   public ResponseEntity<List<PostListResponse>> getPosts(
       @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "10") int size) {
+      @RequestParam(defaultValue = "8") int size) {
     return ResponseEntity.ok(postService.getAllPosts(page, size));
   }
 
@@ -60,5 +60,7 @@ public class PostController {
   public Post getPost(@PathVariable Long postId) {
     return postService.getPostById(postId);
   }
+
+  // TODO: 게시글 총 건수 조회
 
 }
