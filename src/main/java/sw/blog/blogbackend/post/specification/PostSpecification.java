@@ -3,8 +3,11 @@ package sw.blog.blogbackend.post.specification;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import sw.blog.blogbackend.post.dto.PostSearchCondition;
 import sw.blog.blogbackend.post.entity.Post;
+import sw.blog.blogbackend.tag.entity.Tag;
 
 public class PostSpecification {
 
@@ -28,8 +31,19 @@ public class PostSpecification {
   }
 
   private static Specification<Post> tagEquals(String tagName) {
-    return (root, query, criteriaBuilder) -> criteriaBuilder.equal(
-        root.join(tagName).get("name"), tagName);
+    return (root, query, criteriaBuilder) -> {
+      if (!StringUtils.hasText(tagName)) {
+        return criteriaBuilder.conjunction();
+      }
+
+      if (query != null) {
+        query.distinct(true);
+      }
+
+      Join<Post, Tag> tagJoin = root.join("tags", JoinType.INNER);
+      return criteriaBuilder.equal(tagJoin.get("name"), tagName);
+
+    };
   }
 
   private static Specification<Post> categoryEquals(String category) {
