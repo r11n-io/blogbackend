@@ -32,6 +32,7 @@ import sw.blog.blogbackend.common.exception.ResourceNotFoundException;
 import sw.blog.blogbackend.common.security.JwtTokenProvider;
 import sw.blog.blogbackend.common.security.service.CustomUserDetailService;
 import sw.blog.blogbackend.post.dto.PostCreateRequest;
+import sw.blog.blogbackend.post.dto.PostDetailResponse;
 import sw.blog.blogbackend.post.dto.PostListResponse;
 import sw.blog.blogbackend.post.entity.Post;
 import sw.blog.blogbackend.post.service.PostService;
@@ -137,8 +138,8 @@ public class PostControllerTest {
 	@Test
 	void givenValidId_whenGetPost_thenReturnPost() throws Exception {
 		Long postId = 1L;
-		Post mockPost = Post.builder()
-				.id(postId).title("D1").content("C1").category("TEST").build();
+		PostDetailResponse mockPost = PostDetailResponse.builder()
+				.postId(postId).title("D1").content("C1").category("TEST").build();
 
 		when(postService.getPostById(postId)).thenReturn(mockPost);
 
@@ -147,7 +148,7 @@ public class PostControllerTest {
 						.contentType(MediaType.APPLICATION_JSON))
 				.andDo(print())
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.id").value(1L))
+				.andExpect(jsonPath("$.postId").value(1L))
 				.andExpect(jsonPath("$.title").value("D1"));
 
 		verify(postService, times(1)).getPostById(postId);

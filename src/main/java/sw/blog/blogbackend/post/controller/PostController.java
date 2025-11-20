@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import sw.blog.blogbackend.post.dto.PostCreateRequest;
+import sw.blog.blogbackend.post.dto.PostDetailResponse;
 import sw.blog.blogbackend.post.dto.PostListResponse;
 import sw.blog.blogbackend.post.dto.PostSearchCondition;
 import sw.blog.blogbackend.post.entity.Post;
@@ -60,8 +61,8 @@ public class PostController {
 
   // [GET] 특정 게시글 상세 조회
   @GetMapping("/{postId}")
-  public Post getPost(@PathVariable Long postId) {
-    return postService.getPostById(postId);
+  public ResponseEntity<PostDetailResponse> getPost(@PathVariable Long postId) {
+    return ResponseEntity.ok(postService.getPostById(postId));
   }
 
   // [GET] 게시글 총 건수 조회

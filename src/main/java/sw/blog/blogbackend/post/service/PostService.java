@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import sw.blog.blogbackend.common.exception.ResourceNotFoundException;
 import sw.blog.blogbackend.post.dto.PostCreateRequest;
+import sw.blog.blogbackend.post.dto.PostDetailResponse;
 import sw.blog.blogbackend.post.dto.PostListResponse;
 import sw.blog.blogbackend.post.dto.PostSearchCondition;
 import sw.blog.blogbackend.post.entity.Post;
@@ -72,8 +74,12 @@ public class PostService {
   // 2. 전체 게시글 목록 조회 (페이징)
   public List<PostListResponse> getAllPosts(
       PostSearchCondition condition, int page, int size) {
-    var pageable = PageRequest.of(page, size);
+    // 정렬, 페이징, 검색조건 설정
+    var sort = Sort.by(Sort.Direction.DESC, "createAt");
+    var pageable = PageRequest.of(page, size, sort);
     Specification<Post> spec = PostSpecification.buildSpecification(condition);
+
+    // 목록 조회
     List<Post> posts = postRepository.findAll(spec, pageable).getContent();
 
     return posts.stream()
@@ -82,13 +88,15 @@ public class PostService {
   }
 
   // 3. 특정 게시글 상세 조회
-  public Post getPostById(Long id) {
+  public PostDetailResponse getPostById(Long id) {
     if (id == null) {
       throw new IllegalArgumentException("ID 파라미터가 누락되었습니다.");
     }
 
-    return postRepository.findById(id)
+    Post post = postRepository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("게시글", id));
+
+    return PostDetailResponse.from(post);
   }
 
   // 전체 게시글 총 건수 조회

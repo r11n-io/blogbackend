@@ -27,6 +27,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import sw.blog.blogbackend.common.exception.ResourceNotFoundException;
 import sw.blog.blogbackend.post.dto.PostCreateRequest;
+import sw.blog.blogbackend.post.dto.PostDetailResponse;
 import sw.blog.blogbackend.post.dto.PostListResponse;
 import sw.blog.blogbackend.post.dto.PostSearchCondition;
 import sw.blog.blogbackend.post.entity.Post;
@@ -165,7 +166,7 @@ public class PostServiceTest {
 
     when(postRepository.findById(postId)).thenReturn(Optional.of(mockPost));
 
-    Post actualPost = postService.getPostById(postId);
+    PostDetailResponse actualPost = postService.getPostById(postId);
 
     assertThat(actualPost).isNotNull();
     assertThat(actualPost.getTitle()).isEqualTo("상세조회 게시글");

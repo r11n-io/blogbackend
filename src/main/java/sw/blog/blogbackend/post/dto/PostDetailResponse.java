@@ -11,7 +11,7 @@ import sw.blog.blogbackend.tag.entity.Tag;
 
 @Builder
 @Getter
-public class PostListResponse {
+public class PostDetailResponse {
 
   private Long postId;
   private String title;
@@ -20,12 +20,12 @@ public class PostListResponse {
   private LocalDateTime createAt;
   private List<String> tags;
 
-  public static PostListResponse from(Post post) {
+  public static PostDetailResponse from(Post post) {
     List<String> tagNames = post.getTags().stream()
         .map(Tag::getName)
         .collect(Collectors.toList());
 
-    return PostListResponse.builder()
+    return PostDetailResponse.builder()
         .postId(post.getId())
         .title(post.getTitle())
         .content(post.getContent())
