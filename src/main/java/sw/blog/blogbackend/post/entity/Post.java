@@ -9,12 +9,14 @@ import org.springframework.data.annotation.CreatedDate;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -22,6 +24,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import sw.blog.blogbackend.series.entity.Series;
 import sw.blog.blogbackend.tag.entity.Tag;
 
 @Entity
@@ -57,12 +60,17 @@ public class Post {
   private boolean isPrivate = false;
 
   @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-  // TODO: 테이블명 둘 다 복수형으로 변경..
-  @JoinTable(name = "post_tags", joinColumns = @JoinColumn(name = "post_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
+  @JoinTable(name = "posts_tags", joinColumns = @JoinColumn(name = "post_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
   @Builder.Default
   private Set<Tag> tags = new HashSet<>();
 
   public void addTag(Tag tag) {
     this.tags.add(tag);
   }
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "series_id")
+  private Series series;
+
+  private Integer seriesOrder;
 }

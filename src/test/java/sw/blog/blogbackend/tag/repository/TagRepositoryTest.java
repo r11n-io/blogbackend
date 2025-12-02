@@ -21,7 +21,7 @@ public class TagRepositoryTest {
 
   @Test
   void givenTagName_whenFindByName_thenReturnTag() {
-    String tagName = "Test";
+    String tagName = "JUNIT_TEST";
     Tag newTag = new Tag(tagName);
     tagRepository.save(newTag);
 

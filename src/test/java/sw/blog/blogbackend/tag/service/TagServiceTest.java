@@ -14,7 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import sw.blog.blogbackend.tag.dto.TagResponseDto;
+import sw.blog.blogbackend.tag.dto.TagResponse;
 import sw.blog.blogbackend.tag.entity.Tag;
 import sw.blog.blogbackend.tag.repository.TagRepository;
 
@@ -34,7 +34,7 @@ public class TagServiceTest {
 
     when(tagRepository.findAll()).thenReturn(Arrays.asList(tag1, tag2));
 
-    List<TagResponseDto> result = tagService.getAllTags();
+    List<TagResponse> result = tagService.getAllTags();
 
     verify(tagRepository, times(1)).findAll();
     assertThat(result).hasSize(2);

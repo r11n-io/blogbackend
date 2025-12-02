@@ -9,6 +9,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
 import sw.blog.blogbackend.post.entity.Post;
+import sw.blog.blogbackend.series.entity.Series;
 
 @Repository
 public interface PostRepository
@@ -17,4 +18,6 @@ public interface PostRepository
   @EntityGraph(attributePaths = { "tags" })
   @NonNull
   List<Post> findAll();
+
+  List<Post> findBySeriesOrderBySeriesOrderAsc(Series series);
 }

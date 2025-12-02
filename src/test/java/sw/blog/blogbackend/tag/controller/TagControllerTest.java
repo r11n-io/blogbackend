@@ -21,7 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import sw.blog.blogbackend.common.security.JwtTokenProvider;
 import sw.blog.blogbackend.common.security.service.CustomUserDetailService;
 import sw.blog.blogbackend.tag.controllter.TagController;
-import sw.blog.blogbackend.tag.dto.TagResponseDto;
+import sw.blog.blogbackend.tag.dto.TagResponse;
 import sw.blog.blogbackend.tag.service.TagService;
 
 @SuppressWarnings("removal")
@@ -46,8 +46,8 @@ public class TagControllerTest {
   @SuppressWarnings("null")
   @Test
   void getAllTags_shouldReturnListOfTags() throws Exception {
-    TagResponseDto dto1 = TagResponseDto.builder().name("JUnit").build();
-    TagResponseDto dto2 = TagResponseDto.builder().name("TEST").build();
+    TagResponse dto1 = TagResponse.builder().name("JUnit").build();
+    TagResponse dto2 = TagResponse.builder().name("TEST").build();
 
     when(tagService.getAllTags()).thenReturn(Arrays.asList(dto1, dto2));
 

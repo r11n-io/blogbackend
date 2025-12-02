@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import sw.blog.blogbackend.tag.dto.TagResponseDto;
+import sw.blog.blogbackend.tag.dto.TagResponse;
 import sw.blog.blogbackend.tag.repository.TagRepository;
 
 @Service
@@ -15,9 +15,9 @@ public class TagService {
 
   private final TagRepository tagRepository;
 
-  public List<TagResponseDto> getAllTags() {
+  public List<TagResponse> getAllTags() {
     return tagRepository.findAll().stream()
-        .map(tag -> TagResponseDto.builder()
+        .map(tag -> TagResponse.builder()
             .name(tag.getName())
             .build())
         .collect(Collectors.toList());

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import sw.blog.blogbackend.tag.dto.TagResponseDto;
+import sw.blog.blogbackend.tag.dto.TagResponse;
 import sw.blog.blogbackend.tag.service.TagService;
 
 @RestController
@@ -20,7 +20,7 @@ public class TagController {
 
   // [GET] /api/tags 태그 전체 목록
   @GetMapping
-  public ResponseEntity<List<TagResponseDto>> getAllTags() {
+  public ResponseEntity<List<TagResponse>> getAllTags() {
     return ResponseEntity.ok(tagService.getAllTags());
   }
 

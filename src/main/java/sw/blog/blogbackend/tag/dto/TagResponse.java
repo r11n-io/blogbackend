@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class TagResponseDto {
+public class TagResponse {
 
   private String tag_id;
   private String name;
