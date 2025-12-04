@@ -36,6 +36,25 @@ public class SeriesService {
     return seriesRepository.save(series);
   }
 
+  // 시리즈 삭제: 관련 게시물 시리즈 컬럼 업데이트
+  @SuppressWarnings("null")
+  public void deleteSeries(Long seriesId) {
+    Series series = seriesRepository.findById(seriesId)
+        .orElseThrow(() -> new ResourceNotFoundException("시리즈", seriesId));
+
+    List<Post> postsInSeries = postRepository.findBySeries(series);
+
+    if (!postsInSeries.isEmpty()) {
+      for (Post post : postsInSeries) {
+        post.setSeriesToNull();
+      }
+
+      postRepository.saveAll(postsInSeries);
+    }
+
+    seriesRepository.delete(series);
+  }
+
   // 시리즈 목록 조회
   public List<SeriesResponse> getAllSeries() {
     List<Series> series = seriesRepository.findAll();

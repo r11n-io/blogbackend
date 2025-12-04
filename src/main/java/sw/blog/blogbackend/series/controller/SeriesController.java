@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,10 +38,18 @@ public class SeriesController {
     Series createdSeries = seriesService.createSeries(request);
 
     Map<String, Object> responseBody = new HashMap<>();
-    responseBody.put("siriesId", createdSeries.getSeriesId());
-    responseBody.put("message", "게시글이 성공적으로 등록되었습니다.");
+    responseBody.put("seriesId", createdSeries.getSeriesId());
+    responseBody.put("message", "시리즈가 성공적으로 등록되었습니다.");
 
     return ResponseEntity.created(URI.create("/posts")).body(responseBody);
+  }
+
+  // [DELETE] 시리즈 삭제: 관련 게시글 컬럼 업데이트
+  @DeleteMapping("/{seriesId}")
+  public ResponseEntity<Map<String, Object>> deleteSeries(@PathVariable Long seriesId) {
+    seriesService.deleteSeries(seriesId);
+
+    return ResponseEntity.noContent().build();
   }
 
   // [GET] 시리즈 목록 조회

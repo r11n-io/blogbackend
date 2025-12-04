@@ -1,11 +1,14 @@
 package sw.blog.blogbackend.series.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -76,7 +79,7 @@ public class SeriesControllerTest {
             .content(objectMapper.writeValueAsString(createRequest)))
         .andDo(print())
         .andExpect(status().isCreated())
-        .andExpect(jsonPath("$.siriesId").value(999L));
+        .andExpect(jsonPath("$.seriesId").value(999L));
 
     verify(seriesService, times(1)).createSeries(any());
   }
@@ -97,7 +100,37 @@ public class SeriesControllerTest {
     verify(seriesService, never()).createSeries(invalidRequest);
   }
 
-  @SuppressWarnings("null")
+  @Test
+  void deleteSeries_return204() throws Exception {
+    Long seriesId = 666L;
+
+    // 호출 시 아무것도 안하고 정상종료
+    doNothing().when(seriesService).deleteSeries(seriesId);
+
+    mockMvc.perform(
+        delete("/api/series/{seriesId}", seriesId)
+            .contentType(MediaType.APPLICATION_JSON))
+        .andDo(print())
+        .andExpect(status().isNoContent());
+
+    verify(seriesService, times(1)).deleteSeries(seriesId);
+  }
+
+  @Test
+  void deleteSeries_return404() throws Exception {
+    Long nonExistenId = 666L;
+
+    doThrow(new ResourceNotFoundException("시리즈", nonExistenId))
+        .when(seriesService).deleteSeries(nonExistenId);
+
+    mockMvc.perform(
+        delete("/api/series/{seriesId}", nonExistenId)
+            .contentType(MediaType.APPLICATION_JSON))
+        .andDo(print())
+        .andExpect(status().isNotFound());
+
+  }
+
   @Test
   void getAllSeries_return200AndList() throws Exception {
     SeriesResponse mockSeries1 = SeriesResponse.builder()

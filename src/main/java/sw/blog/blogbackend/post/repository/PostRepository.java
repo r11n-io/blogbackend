@@ -20,4 +20,6 @@ public interface PostRepository
   List<Post> findAll();
 
   List<Post> findBySeriesOrderBySeriesOrderAsc(Series series);
+
+  List<Post> findBySeries(Series series);
 }

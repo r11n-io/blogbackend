@@ -73,4 +73,14 @@ public class Post {
   private Series series;
 
   private Integer seriesOrder;
+
+  public void setSeriesToNull() {
+    this.series = null;
+    this.seriesOrder = null;
+  }
+
+  public void updateSeries(Series series, Integer seriesOrder) {
+    this.series = series;
+    this.seriesOrder = seriesOrder;
+  }
 }

@@ -3,6 +3,7 @@ package sw.blog.blogbackend.series.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -28,6 +29,7 @@ import sw.blog.blogbackend.series.dto.SeriesResponse;
 import sw.blog.blogbackend.series.entity.Series;
 import sw.blog.blogbackend.series.repository.SeriesRepository;
 
+@SuppressWarnings("null")
 @ExtendWith(MockitoExtension.class)
 public class SeriesServiceTest {
 
@@ -40,9 +42,8 @@ public class SeriesServiceTest {
   @InjectMocks
   private SeriesService seriesService;
 
-  @SuppressWarnings("null")
   @Test
-  void whenCreateSeries_shouldReturnSeries() {
+  void createSeries_suceess() {
     String title = "JUnit5 테스트 개발기";
     String description = "백엔드 테스트를 이야기합니다.";
     Series series = Series.builder()
@@ -69,6 +70,51 @@ public class SeriesServiceTest {
     return Post.builder()
         .id(id).series(series).seriesOrder(null)
         .build();
+  }
+
+  @Test
+  void deleteSeries_withNoPost_success() {
+    Long seriesId = 666L;
+    Series mockSeries = createSeries(seriesId, "단일 시리즈 테스트");
+
+    when(seriesRepository.findById(seriesId)).thenReturn(Optional.of(mockSeries));
+    when(postRepository.findBySeries(mockSeries)).thenReturn(List.of());
+
+    seriesService.deleteSeries(seriesId);
+
+    verify(postRepository, never()).saveAll(anyList());
+    verify(seriesRepository, times(1)).delete(mockSeries);
+  }
+
+  @Test
+  void deleteSeries_withPosts_success() {
+    Long seriesId = 666L;
+    Series mockSeries = createSeries(seriesId, "연결 시리즈 테스트");
+
+    Post post1 = createPost(661L, mockSeries, 1);
+    Post post2 = createPost(662L, mockSeries, 2);
+    List<Post> postsInSeries = Arrays.asList(post1, post2);
+
+    when(seriesRepository.findById(seriesId)).thenReturn(Optional.of(mockSeries));
+    when(postRepository.findBySeries(mockSeries)).thenReturn(postsInSeries);
+
+    seriesService.deleteSeries(seriesId);
+
+    verify(postRepository, times(1)).saveAll(postsInSeries);
+    verify(seriesRepository, times(1)).delete(mockSeries);
+  }
+
+  @Test
+  void deleteSeries_notFound_throwsException() {
+    Long nonExistenId = 666L;
+
+    when(seriesRepository.findById(nonExistenId)).thenReturn(Optional.empty());
+
+    assertThrows(ResourceNotFoundException.class, () -> {
+      seriesService.deleteSeries(nonExistenId);
+    });
+
+    verify(seriesRepository, never()).delete(any(Series.class));
   }
 
   @Test
