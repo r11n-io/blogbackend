@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.Getter;
 import sw.blog.blogbackend.post.entity.Post;
+import sw.blog.blogbackend.series.entity.Series;
 import sw.blog.blogbackend.tag.entity.Tag;
 
 @Builder
@@ -19,11 +20,15 @@ public class PostListResponse {
   private String category;
   private LocalDateTime createAt;
   private List<String> tags;
+  private Long seriesId;
+  private String seriesTitle;
+  private Integer seriesOrder;
 
   public static PostListResponse from(Post post) {
     List<String> tagNames = post.getTags().stream()
         .map(Tag::getName)
         .collect(Collectors.toList());
+    Series series = post.getSeries();
 
     return PostListResponse.builder()
         .postId(post.getId())
@@ -32,6 +37,9 @@ public class PostListResponse {
         .category(post.getCategory())
         .createAt(post.getCreateAt())
         .tags(tagNames)
+        .seriesId(series != null ? series.getSeriesId() : null)
+        .seriesTitle(series != null ? series.getTitle() : null)
+        .seriesOrder(post.getSeriesOrder())
         .build();
   }
 }

@@ -21,6 +21,8 @@ import sw.blog.blogbackend.post.dto.PostSearchCondition;
 import sw.blog.blogbackend.post.entity.Post;
 import sw.blog.blogbackend.post.repository.PostRepository;
 import sw.blog.blogbackend.post.specification.PostSpecification;
+import sw.blog.blogbackend.series.entity.Series;
+import sw.blog.blogbackend.series.repository.SeriesRepository;
 import sw.blog.blogbackend.tag.entity.Tag;
 import sw.blog.blogbackend.tag.repository.TagRepository;
 
@@ -31,13 +33,16 @@ public class PostService {
 
   private final PostRepository postRepository;
   private final TagRepository tagRepository;
+  private final SeriesRepository seriesRepository;
 
   // 1. 새 게시글 저장
   @Transactional
   @SuppressWarnings("null")
   public Post createPost(PostCreateRequest request) {
+    // 태그 변환
     Set<Tag> tags = getOrCreateTag(request.getTags());
 
+    // 게시글 기본 엔티티 생성
     Post newPost = Post.builder()
         .title(request.getTitle())
         .content(request.getContent())
@@ -45,6 +50,18 @@ public class PostService {
         .isPrivate(request.isPrivate())
         .tags(tags)
         .build();
+
+    // 시리즈 세팅
+    if (request.getSeriesId() != null) {
+      Series series = seriesRepository.findById(request.getSeriesId())
+          .orElseThrow(() -> new ResourceNotFoundException("시리즈", request.getSeriesId()));
+
+      newPost.setSeries(series);
+      newPost.setSeriesOrder(request.getSeriesOrder());
+    } else {
+      newPost.setSeries(null);
+      newPost.setSeriesOrder(null);
+    }
 
     return postRepository.save(newPost);
   }

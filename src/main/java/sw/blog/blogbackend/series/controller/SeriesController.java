@@ -46,7 +46,8 @@ public class SeriesController {
 
   // [DELETE] 시리즈 삭제: 관련 게시글 컬럼 업데이트
   @DeleteMapping("/{seriesId}")
-  public ResponseEntity<Map<String, Object>> deleteSeries(@PathVariable Long seriesId) {
+  @PreAuthorize("isAuthenticated()")
+  public ResponseEntity<Void> deleteSeries(@PathVariable Long seriesId) {
     seriesService.deleteSeries(seriesId);
 
     return ResponseEntity.noContent().build();

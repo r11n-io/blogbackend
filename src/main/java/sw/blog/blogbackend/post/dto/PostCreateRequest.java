@@ -30,4 +30,8 @@ public class PostCreateRequest {
   private boolean isPrivate;
 
   private List<String> tags;
+
+  private Long seriesId;
+
+  private Integer seriesOrder;
 }
