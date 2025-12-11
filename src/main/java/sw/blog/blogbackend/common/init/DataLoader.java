@@ -1,6 +1,7 @@
 package sw.blog.blogbackend.common.init;
 
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -9,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import sw.blog.blogbackend.user.entity.User;
 import sw.blog.blogbackend.user.repository.UserRepository;
 
+@Order(1)
 @Component
 @RequiredArgsConstructor
 @Slf4j
