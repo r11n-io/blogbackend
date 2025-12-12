@@ -24,6 +24,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import sw.blog.blogbackend.post.dto.PostCreateRequest;
+import sw.blog.blogbackend.post.dto.PostUpdateRequest;
 import sw.blog.blogbackend.series.entity.Series;
 import sw.blog.blogbackend.tag.entity.Tag;
 
@@ -59,6 +61,7 @@ public class Post {
   @Builder.Default
   private boolean isPrivate = false;
 
+  // 태그 관련 컬럼 & 메소드
   @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
   @JoinTable(name = "posts_tags", joinColumns = @JoinColumn(name = "post_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
   @Builder.Default
@@ -68,6 +71,7 @@ public class Post {
     this.tags.add(tag);
   }
 
+  // 시리즈 관련 컬럼 & 메소드
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "series_id")
   private Series series;
@@ -82,5 +86,24 @@ public class Post {
   public void updateSeries(Series series, Integer seriesOrder) {
     this.series = series;
     this.seriesOrder = seriesOrder;
+  }
+
+  public void updateMetadata(PostUpdateRequest updateRequest, Set<Tag> tags) {
+    this.title = updateRequest.getTitle();
+    this.content = updateRequest.getContent();
+    this.category = updateRequest.getCategory();
+    this.isPrivate = updateRequest.isPrivate();
+    this.tags = tags;
+    // 시리즈는 서비스에서 처리
+  }
+
+  public static Post from(PostCreateRequest createRequest, Set<Tag> tags) {
+    return Post.builder()
+        .title(createRequest.getTitle())
+        .content(createRequest.getContent())
+        .category(createRequest.getCategory())
+        .isPrivate(createRequest.isPrivate())
+        .tags(tags)
+        .build();
   }
 }

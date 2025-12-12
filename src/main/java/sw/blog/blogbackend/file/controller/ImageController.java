@@ -1,5 +1,7 @@
 package sw.blog.blogbackend.file.controller;
 
+import java.io.IOException;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,10 +22,11 @@ public class ImageController {
   private final ImageService imageService;
 
   @PostMapping("/image")
-  public ResponseEntity<ImageResponse> uploadImage(@RequestParam MultipartFile file) {
+  public ResponseEntity<ImageResponse> uploadImage(
+      @RequestParam MultipartFile file) throws IOException {
     File savedFile = imageService.uploadPostImage(file);
     ImageResponse imageResponse = ImageResponse.builder()
-        .fileUrl(savedFile.getUrl())
+        .url(savedFile.getUrl())
         .build();
 
     return ResponseEntity.ok(imageResponse);

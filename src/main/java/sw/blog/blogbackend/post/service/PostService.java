@@ -2,6 +2,7 @@ package sw.blog.blogbackend.post.service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -14,10 +15,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import sw.blog.blogbackend.common.exception.ResourceNotFoundException;
+import sw.blog.blogbackend.common.util.MarkdownParser;
+import sw.blog.blogbackend.file.service.ImageService;
 import sw.blog.blogbackend.post.dto.PostCreateRequest;
 import sw.blog.blogbackend.post.dto.PostDetailResponse;
 import sw.blog.blogbackend.post.dto.PostListResponse;
 import sw.blog.blogbackend.post.dto.PostSearchCondition;
+import sw.blog.blogbackend.post.dto.PostUpdateRequest;
 import sw.blog.blogbackend.post.entity.Post;
 import sw.blog.blogbackend.post.repository.PostRepository;
 import sw.blog.blogbackend.post.specification.PostSpecification;
@@ -31,25 +35,18 @@ import sw.blog.blogbackend.tag.repository.TagRepository;
 @RequiredArgsConstructor
 public class PostService {
 
+  private final ImageService imageService;
   private final PostRepository postRepository;
   private final TagRepository tagRepository;
   private final SeriesRepository seriesRepository;
 
-  // 1. 새 게시글 저장
+  // 새 게시글 저장
   @Transactional
   @SuppressWarnings("null")
   public Post createPost(PostCreateRequest request) {
-    // 태그 변환
+    // 게시글 & 태그
     Set<Tag> tags = getOrCreateTag(request.getTags());
-
-    // 게시글 기본 엔티티 생성
-    Post newPost = Post.builder()
-        .title(request.getTitle())
-        .content(request.getContent())
-        .category(request.getCategory())
-        .isPrivate(request.isPrivate())
-        .tags(tags)
-        .build();
+    Post newPost = Post.from(request, tags);
 
     // 시리즈 세팅
     if (request.getSeriesId() != null) {
@@ -63,7 +60,50 @@ public class PostService {
       newPost.setSeriesOrder(null);
     }
 
-    return postRepository.save(newPost);
+    Post savedPost = postRepository.save(newPost);
+
+    // 이미지
+    List<String> imageUrls = MarkdownParser.extractImageUrls(request.getContent());
+    imageService.updateFileUsage(imageUrls, savedPost.getId());
+
+    return savedPost;
+  }
+
+  // 게시글 수정
+  @Transactional
+  @SuppressWarnings("null")
+  public Post updatePost(Long postId, PostUpdateRequest request) {
+    // 게시글 & 태그
+    if (postId == null) {
+      throw new IllegalArgumentException("ID 파라미터가 누락되었습니다.");
+    }
+
+    Post post = postRepository.findById(postId)
+        .orElseThrow(() -> new ResourceNotFoundException("게시글", postId));
+    Set<Tag> tags = getOrCreateTag(request.getTags());
+
+    post.updateMetadata(request, tags);
+
+    // 시리즈 세팅
+    if (request.getSeriesId() != null) {
+      Series series = seriesRepository.findById(request.getSeriesId())
+          .orElseThrow(() -> new ResourceNotFoundException("시리즈", request.getSeriesId()));
+
+      if (!Objects.equals(post.getSeries(), series)
+          || !Objects.equals(post.getSeriesOrder(), request.getSeriesOrder())) {
+        post.setSeries(series);
+        post.setSeriesOrder(request.getSeriesOrder());
+      }
+    } else {
+      post.setSeries(null);
+      post.setSeriesOrder(null);
+    }
+
+    // 이미지
+    List<String> imageUrls = MarkdownParser.extractImageUrls(request.getContent());
+    imageService.updateFileUsage(imageUrls, postId);
+
+    return post;
   }
 
   // [게시글 저장, 수정] 태그 리스트 -> 셋 변환
@@ -88,7 +128,7 @@ public class PostService {
     return tags;
   }
 
-  // 2. 전체 게시글 목록 조회 (페이징)
+  // 전체 게시글 목록 조회 (페이징)
   public List<PostListResponse> getAllPosts(
       PostSearchCondition condition, int page, int size) {
     // 정렬, 페이징, 검색조건 설정
@@ -104,7 +144,7 @@ public class PostService {
         .collect(Collectors.toList());
   }
 
-  // 3. 특정 게시글 상세 조회
+  // 특정 게시글 상세 조회
   public PostDetailResponse getPostById(Long id) {
     if (id == null) {
       throw new IllegalArgumentException("ID 파라미터가 누락되었습니다.");

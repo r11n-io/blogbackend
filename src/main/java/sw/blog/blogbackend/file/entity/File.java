@@ -26,6 +26,12 @@ public class File {
   @Column(nullable = false, length = 512)
   private String url;
 
+  private String originalFileName;
+
+  private Long fileSize;
+
+  private String mimeType;
+
   @Builder.Default
   private LocalDateTime uploadAt = LocalDateTime.now();
 
