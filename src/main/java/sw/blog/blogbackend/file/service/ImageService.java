@@ -98,8 +98,8 @@ public class ImageService {
 
     return CustomByteArrayMultipartFile.builder()
         .bytes(os.toByteArray())
-        .name(newFileName)
-        .originalFilename(originalName)
+        .name("file")
+        .originalFilename(newFileName)
         .contentType("image/webp")
         .build();
   }

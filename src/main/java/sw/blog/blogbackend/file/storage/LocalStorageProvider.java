@@ -7,24 +7,26 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import sw.blog.blogbackend.file.config.FileProperties;
 
 @Slf4j
 @Service
 @Profile("dev")
+@RequiredArgsConstructor
 public class LocalStorageProvider implements StorageProvider {
 
-  @Value("${upload.path.local}")
-  private String localUploadPath;
+  private final FileProperties fileProperties;
 
   @SuppressWarnings("null")
   @Override
   public String upload(MultipartFile file, String path) throws IOException {
+    String localUploadPath = fileProperties.getPath().getLocal();
     Path uploadDirPath = Paths.get(localUploadPath, path);
 
     Files.createDirectories(uploadDirPath);
@@ -45,6 +47,7 @@ public class LocalStorageProvider implements StorageProvider {
   @Override
   public void delete(String fileUrl) {
     try {
+      String localUploadPath = fileProperties.getPath().getLocal();
       String relativePath = fileUrl.replace("/files/", "");
       Path targetPath = Paths.get(localUploadPath, relativePath);
 
