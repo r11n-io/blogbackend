@@ -7,8 +7,8 @@ import java.util.regex.Pattern;
 
 public class MarkdownParser {
 
-  private static final Pattern MARKDOWN_IMAGE_PATTERN = Pattern
-      .compile("!\\[[^\\[\\]]*\\]\\((http[s]?://[^\\s\\)]+)\\)");
+  private static final Pattern MARKDOWN_IMAGE_PATTERN = Pattern.compile(
+      "!\\[[^\\[\\]]*\\]\\(((?:http[s]?://|/files/)[^\\s\\)]+)\\)");
 
   /**
    * 마크다운 텍스트에서 모든 이미지 URL 추출
