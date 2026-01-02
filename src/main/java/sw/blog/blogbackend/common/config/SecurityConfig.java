@@ -41,8 +41,10 @@ public class SecurityConfig {
         .httpBasic(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/api/auth/**").permitAll()
+            .requestMatchers("/files/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/posts/**", "api/tags/**").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/posts").authenticated()
+            .requestMatchers(HttpMethod.POST, "/api/upload/image/**").authenticated()
             .requestMatchers(HttpMethod.PUT, "/api/posts/**").authenticated()
             .requestMatchers(HttpMethod.DELETE, "/api/posts/**").authenticated()
             .anyRequest().authenticated())

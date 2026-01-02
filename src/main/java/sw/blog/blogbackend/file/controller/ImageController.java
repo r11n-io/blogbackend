@@ -3,6 +3,7 @@ package sw.blog.blogbackend.file.controller;
 import java.io.IOException;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,6 +22,7 @@ public class ImageController {
 
   private final ImageService imageService;
 
+  @PreAuthorize("isAuthenticated()")
   @PostMapping("/image")
   public ResponseEntity<ImageResponse> uploadImage(
       @RequestParam MultipartFile file) throws IOException {
