@@ -16,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import sw.blog.blogbackend.common.exception.ResourceNotFoundException;
 import sw.blog.blogbackend.common.util.MarkdownParser;
+import sw.blog.blogbackend.file.entity.File;
+import sw.blog.blogbackend.file.repository.FileRepository;
 import sw.blog.blogbackend.file.service.ImageService;
 import sw.blog.blogbackend.post.dto.PostCreateRequest;
 import sw.blog.blogbackend.post.dto.PostDetailResponse;
@@ -39,6 +41,7 @@ public class PostService {
   private final PostRepository postRepository;
   private final TagRepository tagRepository;
   private final SeriesRepository seriesRepository;
+  private final FileRepository fileRepository;
 
   // 새 게시글 저장
   @Transactional
@@ -160,5 +163,41 @@ public class PostService {
   public long getAllPostsCount(PostSearchCondition condition) {
     Specification<Post> spec = PostSpecification.buildSpecification(condition);
     return postRepository.count(spec);
+  }
+
+  // 게시글 삭제
+  @SuppressWarnings("null")
+  @Transactional
+  public void deletePost(Long id) {
+    if (id == null) {
+      throw new IllegalArgumentException("ID 파라미터가 누락되었습니다.");
+    }
+
+    Post post = postRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("게시글", id));
+
+    // 이미지
+    List<File> images = fileRepository.findByPostId(id);
+    for (File image : images) {
+      image.setPostId(null);
+      image.setUsed(false);
+    }
+
+    // 시리즈
+    if (post.getSeries() != null) {
+      // Series series = post.getSeries();
+      post.setSeries(null);
+    }
+
+    // 태그
+    Set<Tag> tags = post.getTags();
+    post.getTags().clear();
+    for (Tag tag : tags) {
+      if (postRepository.countByTagsContaining(tag) == 1) {
+        tagRepository.delete(tag);
+      }
+    }
+
+    postRepository.delete(post);
   }
 }

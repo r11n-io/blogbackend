@@ -7,10 +7,12 @@ import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,6 +24,7 @@ import sw.blog.blogbackend.post.dto.PostCreateRequest;
 import sw.blog.blogbackend.post.dto.PostDetailResponse;
 import sw.blog.blogbackend.post.dto.PostListResponse;
 import sw.blog.blogbackend.post.dto.PostSearchCondition;
+import sw.blog.blogbackend.post.dto.PostUpdateRequest;
 import sw.blog.blogbackend.post.entity.Post;
 import sw.blog.blogbackend.post.service.PostService;
 
@@ -70,5 +73,30 @@ public class PostController {
   public ResponseEntity<Long> getPostsCount(
       @ModelAttribute PostSearchCondition condition) {
     return ResponseEntity.ok(postService.getAllPostsCount(condition));
+  }
+
+  // [PUT] 특정 게시글 수정
+  @PreAuthorize("isAuthenticated()")
+  @PutMapping("/{postId}")
+  public ResponseEntity<Map<String, Object>> updatePost(
+      @PathVariable Long postId,
+      @Valid @RequestBody PostUpdateRequest request) {
+
+    postService.updatePost(postId, request);
+
+    Map<String, Object> responseBody = new HashMap<>();
+    responseBody.put("postId", postId);
+    responseBody.put("message", "게시글이 성공적으로 수정되었습니다.");
+
+    return ResponseEntity.ok(responseBody);
+  }
+
+  // [DELETE] 특정 게시글 삭제
+  @PreAuthorize("isAuthenticated()")
+  @DeleteMapping("/{postId}")
+  public ResponseEntity<Void> deletePost(@PathVariable Long postId) {
+    postService.deletePost(postId);
+
+    return ResponseEntity.noContent().build();
   }
 }

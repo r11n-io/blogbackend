@@ -12,6 +12,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,6 +28,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
 import sw.blog.blogbackend.common.exception.ResourceNotFoundException;
+import sw.blog.blogbackend.file.entity.File;
+import sw.blog.blogbackend.file.repository.FileRepository;
+import sw.blog.blogbackend.file.service.ImageService;
 import sw.blog.blogbackend.post.dto.PostCreateRequest;
 import sw.blog.blogbackend.post.dto.PostDetailResponse;
 import sw.blog.blogbackend.post.dto.PostListResponse;
@@ -44,6 +49,12 @@ public class PostServiceTest {
 
   @Mock
   private TagRepository tagRepository;
+
+  @Mock
+  private ImageService imageService;
+
+  @Mock
+  private FileRepository fileRepository;
 
   // 테스트 대상 실제 객체 생성하고 @Mock 객체 미리 주입
   @InjectMocks
@@ -222,5 +233,40 @@ public class PostServiceTest {
 
     assertThat(actualCount).isEqualTo(mockCount);
     verify(postRepository, times(1)).count(any(Specification.class));
+  }
+
+  @Test
+  void givenPostWithTagsAndImages_whenDeletePost_thenCleanupSuccessfully() {
+    // 1. 가짜 데이터 준비
+    Long postId = 1L;
+    Tag tag1 = new Tag(TAG_1);
+    Tag tag2 = new Tag(TAG_2);
+
+    Post mockPost = Post.builder()
+        .id(postId)
+        .title("삭제할 제목")
+        .tags(new HashSet<>(Arrays.asList(tag1, tag2)))
+        .build();
+
+    // Mock 동작 정의
+    when(postRepository.findById(postId)).thenReturn(Optional.of(mockPost));
+
+    // 이미지 Mock: 해당 포스트에 이미지가 1개 있다고 가정
+    File mockFile = File.builder().originalFileName("test.webp").isUsed(true).build();
+    when(fileRepository.findByPostId(postId)).thenReturn(Collections.singletonList(mockFile));
+
+    // 태그 카운트 Mock: TAG_1은 이 글만 쓰고 있고(1), TAG_2는 다른 글도 쓰고 있다고 가정(2)
+    when(postRepository.countByTagsContaining(tag1)).thenReturn(1L);
+    when(postRepository.countByTagsContaining(tag2)).thenReturn(2L);
+
+    // 2. 실행
+    postService.deletePost(postId);
+
+    // 3. 검증
+    // A. 이미지 사용 해제 확인 (ImageService나 로직 내 필드 변경 확인)
+    assertThat(mockFile.isUsed()).isFalse();
+    verify(tagRepository, times(1)).delete(tag1);
+    verify(tagRepository, never()).delete(tag2);
+    verify(postRepository, times(1)).delete(mockPost);
   }
 }

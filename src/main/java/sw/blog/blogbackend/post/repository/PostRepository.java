@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import sw.blog.blogbackend.post.entity.Post;
 import sw.blog.blogbackend.series.entity.Series;
+import sw.blog.blogbackend.tag.entity.Tag;
 
 @Repository
 public interface PostRepository
@@ -22,4 +23,6 @@ public interface PostRepository
   List<Post> findBySeriesOrderBySeriesOrderAsc(Series series);
 
   List<Post> findBySeries(Series series);
+
+  long countByTagsContaining(Tag tag);
 }
