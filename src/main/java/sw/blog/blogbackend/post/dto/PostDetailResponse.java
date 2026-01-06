@@ -18,6 +18,7 @@ public class PostDetailResponse {
   private String title;
   private String content;
   private String category;
+  private boolean isPrivate;
   private LocalDateTime createAt;
   private List<String> tags;
   private Long seriesId;
@@ -35,6 +36,7 @@ public class PostDetailResponse {
         .title(post.getTitle())
         .content(post.getContent())
         .category(post.getCategory())
+        .isPrivate(post.isPrivate())
         .createAt(post.getCreateAt())
         .tags(tagNames)
         .seriesId(series != null ? series.getSeriesId() : null)

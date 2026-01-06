@@ -83,9 +83,19 @@ public class PostService {
 
     Post post = postRepository.findById(postId)
         .orElseThrow(() -> new ResourceNotFoundException("게시글", postId));
-    Set<Tag> tags = getOrCreateTag(request.getTags());
+    Set<Tag> oldTags = new HashSet<>(post.getTags());
+    Set<Tag> newTags = getOrCreateTag(request.getTags());
 
-    post.updateMetadata(request, tags);
+    // JPA 더티체킹으로 DB 반영됨
+    post.updateMetadata(request, newTags);
+
+    for (Tag oldTag : oldTags) {
+      if (!newTags.contains(oldTag)) {
+        if (postRepository.countByTagsContaining(oldTag) == 1) {
+          tagRepository.delete(oldTag);
+        }
+      }
+    }
 
     // 시리즈 세팅
     if (request.getSeriesId() != null) {
