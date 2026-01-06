@@ -1,11 +1,14 @@
 package sw.blog.blogbackend.file.service;
 
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import javax.imageio.ImageIO;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -86,10 +89,19 @@ public class ImageService {
   @SuppressWarnings("null")
   private MultipartFile preprocessImage(MultipartFile file) throws IOException {
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-    Thumbnails.of(file.getInputStream())
-        .size(MAX_WIDTH, Integer.MAX_VALUE)
-        .keepAspectRatio(true)
-        .outputFormat("webp")
+    BufferedImage originalImage = ImageIO.read(file.getInputStream());
+    int originWidth = originalImage.getWidth();
+    int originHeight = originalImage.getHeight();
+
+    Thumbnails.Builder<BufferedImage> builder = Thumbnails.of(originalImage);
+
+    if (originWidth > MAX_WIDTH) {
+      builder.size(MAX_WIDTH, Integer.MAX_VALUE).keepAspectRatio(true);
+    } else {
+      builder.size(originWidth, originHeight);
+    }
+
+    builder.outputFormat("webp")
         .outputQuality(QUALITY_RATE)
         .toOutputStream(os);
 
