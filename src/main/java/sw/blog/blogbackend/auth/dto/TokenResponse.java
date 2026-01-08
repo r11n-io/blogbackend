@@ -11,7 +11,7 @@ public class TokenResponse {
   private String accessToken;
 
   // 액세스 토큰 만료 갱신 요청 토큰 (장기)
-  private String refreshToken;
+  // private String refreshToken;
 
   // 사용자 ID 키
   private Long userId;

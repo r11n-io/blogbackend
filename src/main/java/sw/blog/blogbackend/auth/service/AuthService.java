@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import sw.blog.blogbackend.auth.dto.LoginRequest;
-import sw.blog.blogbackend.auth.dto.TokenResponse;
+import sw.blog.blogbackend.auth.dto.TokenDto;
 import sw.blog.blogbackend.auth.entity.RefreshToken;
 import sw.blog.blogbackend.common.security.JwtTokenProvider;
 import sw.blog.blogbackend.user.entity.User;
@@ -28,7 +28,7 @@ public class AuthService {
   private final RefreshTokenService refreshTokenService;
 
   @Transactional
-  public TokenResponse authenticateAndGenerateToken(LoginRequest request) {
+  public TokenDto authenticateAndGenerateToken(LoginRequest request) {
     // 인증 + 콘텍스트 저장
     Authentication authentication = authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(
@@ -45,11 +45,11 @@ public class AuthService {
     Long userId = loginUser.getId();
     RefreshToken refreshToken = refreshTokenService.createAndSaveRefreshToken(userId);
 
-    return new TokenResponse(accessToken, refreshToken.getToken(), userId);
+    return new TokenDto(accessToken, refreshToken.getToken(), userId);
   }
 
   @Transactional
-  public TokenResponse refreshToken(String requestRefreshToken) {
+  public TokenDto refreshToken(String requestRefreshToken) {
     RefreshToken refreshToken = refreshTokenService.findByToken(requestRefreshToken)
         .orElseThrow(() -> new BadCredentialsException("Refresh token이 테이블에 존재하지 않습니다."));
 
@@ -64,7 +64,7 @@ public class AuthService {
         .orElseThrow(() -> new BadCredentialsException("사용자가 테이블에 존재하지 않습니다."));
     String newAccessToken = jwtTokenProvider.createAccessToken(user.getEmail());
 
-    return new TokenResponse(
+    return new TokenDto(
         newAccessToken,
         refreshToken.getToken(),
         refreshToken.getUserId());

@@ -1,5 +1,6 @@
 package sw.blog.blogbackend.common.init;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,10 +20,16 @@ public class DataLoader implements CommandLineRunner {
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder; // SecurityConfig Bean
 
+  @Value("${ADMIN_EMAIL:}")
+  private String adminEmail;
+
+  @Value("${ADMIN_PASSWORD:}")
+  private String adminPassword;
+
   @Override
   public void run(String... args) throws Exception {
-    String email = "thearch90@gmail.com";
-    String encodedPassword = passwordEncoder.encode("1q2w3e4r");
+    String email = adminEmail;
+    String encodedPassword = passwordEncoder.encode(adminPassword);
 
     if (userRepository.findByEmail(email).isEmpty()) {
       User initUser = new User(null, email, encodedPassword,
