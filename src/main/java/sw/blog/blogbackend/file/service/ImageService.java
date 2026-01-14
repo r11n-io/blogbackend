@@ -45,7 +45,7 @@ public class ImageService {
   public void updateFileUsage(List<String> newUrls, Long postId) {
     List<File> previousFiles = fileRepository.findByPostId(postId);
     List<File> filesToUse = newUrls.isEmpty() ? List.of() : fileRepository.findByUrlIn(newUrls);
-    Set<String> newUrlSet = new HashSet<>();
+    Set<String> newUrlSet = new HashSet<>(newUrls);
 
     for (File file : filesToUse) {
       file.setPostId(postId);
