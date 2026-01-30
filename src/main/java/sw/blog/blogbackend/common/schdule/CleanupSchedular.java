@@ -16,7 +16,7 @@ public class CleanupSchedular {
 
   private final ImageService imageService;
 
-  @Scheduled(cron = "0 30 3 * * *")
+  @Scheduled(cron = "0 30 3 * * *", zone = "Asia/Seoul")
   public void cleanupFilesJob() {
     log.info("[스케줄] 미사용 파일 삭제 잡");
     long startTime = System.currentTimeMillis();
