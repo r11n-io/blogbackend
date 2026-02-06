@@ -117,9 +117,8 @@ public class ImageService {
   }
 
   @Transactional
-  public int cleanupUnusedFiles(long olderThanHour) {
-    LocalDateTime cutoffTime = LocalDateTime.now().minusHours(olderThanHour);
-    List<File> filesToDelete = fileRepository.findByIsUsedFalseAndUploadAtBefore(cutoffTime);
+  public int cleanupUnusedFiles(LocalDateTime threshold) {
+    List<File> filesToDelete = fileRepository.findByIsUsedFalseAndUploadAtBefore(threshold);
 
     int deleteCount = 0;
 
