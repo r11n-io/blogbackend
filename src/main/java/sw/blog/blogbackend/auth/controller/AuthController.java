@@ -1,5 +1,7 @@
 package sw.blog.blogbackend.auth.controller;
 
+import java.time.Duration;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,7 @@ public class AuthController {
 
   private final AuthService authService;
 
+  @SuppressWarnings("null")
   @PostMapping("/login")
   public ResponseEntity<TokenResponse> authenticateUser(
       @RequestBody LoginRequest loginRequest) {
@@ -29,8 +32,10 @@ public class AuthController {
     TokenResponse response = new TokenResponse(dto.accessToken(), dto.userId());
     ResponseCookie cookie = ResponseCookie.from("refreshToken", dto.refreshToken())
         .httpOnly(true)
+        .secure(true)
         .path("/")
-        .maxAge(7 * 24 * 60 * 60)
+        .maxAge(Duration.ofDays(7))
+        .sameSite("Lax")
         .build();
 
     return ResponseEntity.ok()
