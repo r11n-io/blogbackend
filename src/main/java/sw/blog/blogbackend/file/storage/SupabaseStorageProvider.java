@@ -59,7 +59,7 @@ public class SupabaseStorageProvider implements StorageProvider {
   public void delete(String fileUrl) {
     DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
         .bucket(supabaseProperties.getBucket())
-        .key(fileUrl)
+        .key(getSupabaseKey(fileUrl))
         .build();
 
     try {
@@ -67,5 +67,18 @@ public class SupabaseStorageProvider implements StorageProvider {
     } catch (S3Exception e) {
       throw new RuntimeException("파일 삭제 중 오류 발생: " + e.awsErrorDetails().errorMessage());
     }
+  }
+
+  private String getSupabaseKey(String url) {
+    if (url.isEmpty())
+      return null;
+
+    if (!url.startsWith("http"))
+      return url;
+
+    String target = "post-images/";
+    int idx = url.indexOf(target);
+
+    return (idx != -1) ? url.substring(idx) : url;
   }
 }
