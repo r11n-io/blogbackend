@@ -17,6 +17,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;
+import net.coobird.thumbnailator.resizers.Resizers;
 import sw.blog.blogbackend.file.entity.File;
 import sw.blog.blogbackend.file.repository.FileRepository;
 import sw.blog.blogbackend.file.storage.StorageProvider;
@@ -96,13 +97,15 @@ public class ImageService {
     Thumbnails.Builder<BufferedImage> builder = Thumbnails.of(originalImage);
 
     if (originWidth > MAX_WIDTH) {
-      builder.size(MAX_WIDTH, Integer.MAX_VALUE).keepAspectRatio(true);
+      builder.size(MAX_WIDTH, originHeight).keepAspectRatio(true);
     } else {
       builder.size(originWidth, originHeight);
     }
 
     builder.outputFormat("webp")
         .outputQuality(QUALITY_RATE)
+        .resizer(Resizers.BICUBIC)
+        .useExifOrientation(false)
         .toOutputStream(os);
 
     String originalName = file.getOriginalFilename();
