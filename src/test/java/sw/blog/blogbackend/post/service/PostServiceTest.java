@@ -235,6 +235,7 @@ public class PostServiceTest {
     verify(postRepository, times(1)).count(any(Specification.class));
   }
 
+  @SuppressWarnings("null")
   @Test
   void givenPostWithTagsAndImages_whenDeletePost_thenCleanupSuccessfully() {
     // 1. 가짜 데이터 준비
