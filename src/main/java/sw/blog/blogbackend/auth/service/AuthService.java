@@ -17,6 +17,9 @@ import sw.blog.blogbackend.common.security.JwtTokenProvider;
 import sw.blog.blogbackend.user.entity.User;
 import sw.blog.blogbackend.user.repository.UserRepository;
 
+/**
+ * 인증 서비스
+ */
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -27,6 +30,12 @@ public class AuthService {
   private final JwtTokenProvider jwtTokenProvider;
   private final RefreshTokenService refreshTokenService;
 
+  /**
+   * 로그인 및 토큰 생성
+   * 
+   * @param request 로그인 요청 DTO
+   * @return 로그인 성공 시 토큰 정보
+   */
   @Transactional
   public TokenDto authenticateAndGenerateToken(LoginRequest request) {
     // 인증 + 콘텍스트 저장
@@ -48,6 +57,12 @@ public class AuthService {
     return new TokenDto(accessToken, refreshToken.getToken(), userId);
   }
 
+  /**
+   * 리프레시 토큰으로 액세스 토큰 갱신
+   * 
+   * @param requestRefreshToken 리프레시 토큰
+   * @return 새로운 액세스 토큰과 사용자 ID를 포함한 응답
+   */
   @Transactional
   public TokenDto refreshToken(String requestRefreshToken) {
     RefreshToken refreshToken = refreshTokenService.findByToken(requestRefreshToken)

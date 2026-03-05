@@ -13,11 +13,25 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+/**
+ * 커스텀 인증 진입점 클래스<br>
+ *
+ * - Spring Security에서 인증되지 않은 사용자가 보호된 리소스에 접근할 때 호출되는 핸들러<br>
+ * - JSON 형식으로 에러 응답을 반환하여 클라이언트가 에러 정보를 쉽게 파싱할 수 있도록 함
+ */
 @Component
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
   private final ObjectMapper objectMapper = new ObjectMapper();
 
+  /**
+   * 인증 예외 처리
+   *
+   * @param request                 HttpServletRequest 요청 객체
+   * @param response                HttpServletResponse 응답 객체
+   * @param authenticationException AuthenticationException 예외 객체
+   * @throws IOException 예외 발생 시
+   */
   @Override
   public void commence(HttpServletRequest request,
       HttpServletResponse response,

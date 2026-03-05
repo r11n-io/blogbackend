@@ -29,6 +29,9 @@ import sw.blog.blogbackend.post.dto.PostUpdateRequest;
 import sw.blog.blogbackend.series.entity.Series;
 import sw.blog.blogbackend.tag.entity.Tag;
 
+/**
+ * 게시글 엔티티
+ */
 @Entity
 @Getter
 @Setter
@@ -38,56 +41,105 @@ import sw.blog.blogbackend.tag.entity.Tag;
 @Table(name = "posts")
 public class Post {
 
+  /**
+   * ID
+   */
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id")
   private Long id;
 
+  /**
+   * 내용
+   */
   @Column(name = "content", nullable = false, columnDefinition = "TEXT")
   private String content;
 
+  /**
+   * 생성일
+   */
   @CreatedDate
   @Column(name = "create_at")
   @Builder.Default
   private LocalDateTime createAt = LocalDateTime.now();
 
+  /**
+   * 제목
+   */
   @Column(name = "title", nullable = false)
   private String title;
 
+  /**
+   * 카테고리
+   */
   @Column(name = "category", nullable = false)
   private String category;
 
+  /**
+   * 공개 여부
+   */
   @Column(name = "is_private", nullable = false)
   @Builder.Default
   private boolean isPrivate = false;
 
   // 태그 관련 컬럼 & 메소드
+
+  /**
+   * 태그
+   */
   @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
   @JoinTable(name = "posts_tags", joinColumns = @JoinColumn(name = "post_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
   @Builder.Default
   private Set<Tag> tags = new HashSet<>();
 
+  /**
+   * 태그 추가
+   *
+   * @param tag 태그 엔티티
+   */
   public void addTag(Tag tag) {
     this.tags.add(tag);
   }
 
   // 시리즈 관련 컬럼 & 메소드
+
+  /**
+   * 시리즈
+   */
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "series_id")
   private Series series;
 
+  /**
+   * 시리즈 내 게시글 순서
+   */
   private Integer seriesOrder;
 
+  /**
+   * 시리즈를 null로 설정
+   */
   public void setSeriesToNull() {
     this.series = null;
     this.seriesOrder = null;
   }
 
+  /**
+   * 시리즈 정보 업데이트
+   *
+   * @param series      시리즈 엔티티
+   * @param seriesOrder 시리즈 내 게시글 순서
+   */
   public void updateSeries(Series series, Integer seriesOrder) {
     this.series = series;
     this.seriesOrder = seriesOrder;
   }
 
+  /**
+   * 게시글 메타데이터 업데이트
+   *
+   * @param updateRequest 게시글 수정 요청 DTO
+   * @param tags          태그 엔티티 셋
+   */
   public void updateMetadata(PostUpdateRequest updateRequest, Set<Tag> tags) {
     this.title = updateRequest.getTitle();
     this.content = updateRequest.getContent();

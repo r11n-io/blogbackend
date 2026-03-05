@@ -17,6 +17,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * 사용자 엔티티
+ */
 @Entity
 @Getter
 @Setter
@@ -24,28 +27,48 @@ import lombok.Setter;
 @AllArgsConstructor
 @Table(name = "users")
 public class User {
-  // 테이블명은 users 복수형, 엔티티 클래스는 단수형으로 사용하는 컨벤션 적용함
-  // JPA 사용하는 경우 가장 일반적인 컨벤션이라고 함..
 
+  /*
+   * 사용자 ID
+   */
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  /*
+   * 이메일
+   */
   @Column(nullable = false, unique = true)
   private String email;
 
+  /*
+   * 비밀번호
+   */
   @Column(nullable = false)
   private String password;
 
+  /*
+   * 사용자 이름
+   */
   @Column(nullable = false, length = 50)
   private String userName;
 
+  /*
+   * 역할
+   */
   @Column(nullable = false)
   private String role;
 
+  /*
+   * 생성일
+   */
   @CreatedDate
   private LocalDateTime createAt;
 
+  /*
+   * 수정일
+   */
   @LastModifiedDate
   private LocalDateTime updateAt;
+
 }

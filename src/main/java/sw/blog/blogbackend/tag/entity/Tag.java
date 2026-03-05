@@ -13,6 +13,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * 태그 엔티티
+ */
 @Entity
 @Table(name = "tags")
 @Getter
@@ -23,15 +26,22 @@ import lombok.Setter;
 @EqualsAndHashCode
 public class Tag {
 
+  public Tag(String name) {
+    this.name = name;
+  };
+
+  /*
+   * 태그 ID
+   */
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "tag_id")
   private Long tagId;
 
+  /*
+   * 태그 이름
+   */
   @Column(name = "name", unique = true, nullable = false, length = 50)
   private String name;
 
-  public Tag(String name) {
-    this.name = name;
-  };
 }

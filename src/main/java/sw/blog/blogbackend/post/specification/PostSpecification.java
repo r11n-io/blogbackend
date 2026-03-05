@@ -9,8 +9,17 @@ import sw.blog.blogbackend.post.dto.PostSearchCondition;
 import sw.blog.blogbackend.post.entity.Post;
 import sw.blog.blogbackend.tag.entity.Tag;
 
+/**
+ * 게시글 검색 조건 스펙
+ */
 public class PostSpecification {
 
+  /**
+   * 게시글 검색 조건 빌더
+   *
+   * @param condition 게시글 검색 조건 DTO
+   * @return 게시글 검색 조건 스펙
+   */
   @SuppressWarnings("removal")
   public static Specification<Post> buildSpecification(
       PostSearchCondition condition) {

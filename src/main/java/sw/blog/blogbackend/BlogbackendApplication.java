@@ -9,6 +9,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import sw.blog.blogbackend.file.config.FileProperties;
 import sw.blog.blogbackend.file.config.SupabaseProperties;
 
+/**
+ * 블로그 백엔드 애플리케이션 클래스
+ */
 @EnableScheduling
 @SpringBootApplication
 @PropertySource("classpath:config/jwt.properties")

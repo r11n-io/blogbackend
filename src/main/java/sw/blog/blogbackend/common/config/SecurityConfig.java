@@ -21,6 +21,9 @@ import sw.blog.blogbackend.common.security.CustomAccessDeniedHandler;
 import sw.blog.blogbackend.common.security.CustomAuthenticationEntryPoint;
 import sw.blog.blogbackend.common.security.JwtAuthenticationFilter;
 
+/**
+ * 스프링 시큐리티 설정 클래스
+ */
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -30,6 +33,13 @@ public class SecurityConfig {
   private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
   private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
+  /**
+   * 스프링 시큐리티 필터 체인 설정
+   *
+   * @param http HttpSecurity
+   * @return SecurityFilterChain
+   * @throws Exception
+   */
   @Bean
   @Order(1)
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -57,11 +67,24 @@ public class SecurityConfig {
   }
 
   // 스프링 시큐리티 핵심 Bean 정의
+
+  /**
+   * 비밀번호 인코더 Bean 정의
+   *
+   * @return BCryptPasswordEncoder
+   */
   @Bean
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
   }
 
+  /**
+   * 인증 관리자 Bean 정의
+   *
+   * @param authenticationConfiguration AuthenticationConfiguration
+   * @return AuthenticationManager
+   * @throws Exception
+   */
   @Bean
   public AuthenticationManager authenticationManager(
       AuthenticationConfiguration authenticationConfiguration) throws Exception {

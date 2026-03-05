@@ -7,6 +7,8 @@ import lombok.Getter;
 @Builder
 public class TagResponse {
 
-  private String tag_id;
+  private String tagId;
+
   private String name;
+
 }

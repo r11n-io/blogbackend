@@ -13,6 +13,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * 시리즈 엔티티
+ */
 @Entity
 @Table(name = "series")
 @Getter
@@ -22,12 +25,21 @@ import lombok.Setter;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Series {
 
+  /*
+   * ID
+   */
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long seriesId;
 
+  /*
+   * 제목
+   */
   private String title;
 
+  /*
+   * 설명
+   */
   @Column(columnDefinition = "TEXT")
   private String description;
 }

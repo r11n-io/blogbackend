@@ -10,13 +10,19 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import sw.blog.blogbackend.user.entity.User;
 
+/**
+ * 사용자 프린시플 클래스<br>
+ *
+ * - Spring Security에서 인증된 사용자의 상세 정보를 담는 클래스
+ */
 public class UserPrincipal implements UserDetails {
+
   private Long id;
   private String email;
   private String password;
   private Collection<? extends GrantedAuthority> authorities;
 
-  // private 생성자: 팩토리 메서드만 사용하도록
+  // 생성자
   private UserPrincipal(Long id, String email, String password, Collection<? extends GrantedAuthority> authorities) {
     this.id = id;
     this.email = email;
@@ -24,7 +30,12 @@ public class UserPrincipal implements UserDetails {
     this.authorities = authorities;
   }
 
-  // DB User 엔티티 -> Spring Security UserPrincipal 변환
+  /**
+   * User 엔티티로부터 UserPrincipal 객체 생성'
+   * 
+   * @param user 사용자 엔티티
+   * @return UserPrincipal 사용자 프린시플 객체
+   */
   public static UserPrincipal create(User user) {
     List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(user.getRole()));
 
@@ -32,6 +43,7 @@ public class UserPrincipal implements UserDetails {
   }
 
   // 필수 오버라이드 메소드 구현
+
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     return authorities;

@@ -17,6 +17,9 @@ import sw.blog.blogbackend.series.dto.SeriesResponse;
 import sw.blog.blogbackend.series.entity.Series;
 import sw.blog.blogbackend.series.repository.SeriesRepository;
 
+/**
+ * 시리즈 서비스
+ */
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -25,7 +28,12 @@ public class SeriesService {
   private final SeriesRepository seriesRepository;
   private final PostRepository postRepository;
 
-  // 시리즈 등록
+  /**
+   * 시리즈 등록
+   * 
+   * @param request 시리즈 등록 요청 DTO
+   * @return 등록된 시리즈 엔티티
+   */
   @SuppressWarnings("null")
   public Series createSeries(SeriesCreateRequest request) {
     Series series = Series.builder()
@@ -36,26 +44,11 @@ public class SeriesService {
     return seriesRepository.save(series);
   }
 
-  // 시리즈 삭제: 관련 게시물 시리즈 컬럼 업데이트
-  @SuppressWarnings("null")
-  public void deleteSeries(Long seriesId) {
-    Series series = seriesRepository.findById(seriesId)
-        .orElseThrow(() -> new ResourceNotFoundException("시리즈", seriesId));
-
-    List<Post> postsInSeries = postRepository.findBySeries(series);
-
-    if (!postsInSeries.isEmpty()) {
-      for (Post post : postsInSeries) {
-        post.setSeriesToNull();
-      }
-
-      postRepository.saveAll(postsInSeries);
-    }
-
-    seriesRepository.delete(series);
-  }
-
-  // 시리즈 목록 조회
+  /**
+   * 전체 시리즈 조회
+   * 
+   * @return 전체 시리즈 목록 DTO 리스트
+   */
   public List<SeriesResponse> getAllSeries() {
     List<Series> series = seriesRepository.findAll();
 
@@ -64,7 +57,12 @@ public class SeriesService {
         .collect(Collectors.toList());
   }
 
-  // 시리즈 상세 조회 + 연관 게시글 조회
+  /**
+   * 시리즈 상세 조회 (게시글 포함)
+   * 
+   * @param seriesId 조회할 시리즈 ID
+   * @return 시리즈 상세 정보 DTO (게시글 포함)
+   */
   public SeriesDetailResponse getSeriesWithPosts(Long seriesId) {
     if (seriesId == null) {
       throw new IllegalArgumentException("ID 파라미터가 누락되었습니다.");
@@ -87,4 +85,29 @@ public class SeriesService {
 
     return detailResponse;
   }
+
+  /**
+   * 시리즈 삭제<br>
+   * - 시리즈 삭제 시, 해당 시리즈에 속한 게시글 시리즈 null 처리
+   * 
+   * @param seriesId 삭제할 시리즈 ID
+   */
+  @SuppressWarnings("null")
+  public void deleteSeries(Long seriesId) {
+    Series series = seriesRepository.findById(seriesId)
+        .orElseThrow(() -> new ResourceNotFoundException("시리즈", seriesId));
+
+    List<Post> postsInSeries = postRepository.findBySeries(series);
+
+    if (!postsInSeries.isEmpty()) {
+      for (Post post : postsInSeries) {
+        post.setSeriesToNull();
+      }
+
+      postRepository.saveAll(postsInSeries);
+    }
+
+    seriesRepository.delete(series);
+  }
+
 }

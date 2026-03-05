@@ -11,6 +11,11 @@ import lombok.extern.slf4j.Slf4j;
 import sw.blog.blogbackend.user.entity.User;
 import sw.blog.blogbackend.user.repository.UserRepository;
 
+/**
+ * 데이터 로더 클래스<br>
+ *
+ * - 애플리케이션 시작 시 초기 데이터를 로드하는 역할
+ */
 @Order(1)
 @Component
 @RequiredArgsConstructor
@@ -26,6 +31,12 @@ public class DataLoader implements CommandLineRunner {
   @Value("${ADMIN_PASSWORD:}")
   private String adminPassword;
 
+  /**
+   * 애플리케이션 시작 시 초기 데이터 로드
+   *
+   * @param args Command line arguments
+   * @throws Exception 예외 발생 시
+   */
   @Override
   public void run(String... args) throws Exception {
     String email = adminEmail;

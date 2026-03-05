@@ -28,6 +28,9 @@ import sw.blog.blogbackend.post.dto.PostUpdateRequest;
 import sw.blog.blogbackend.post.entity.Post;
 import sw.blog.blogbackend.post.service.PostService;
 
+/**
+ * 게시글(Post) 컨트롤러.
+ */
 @RestController
 @RequestMapping("/api/posts")
 @RequiredArgsConstructor
@@ -35,7 +38,12 @@ public class PostController {
 
   private final PostService postService;
 
-  // [POST] 새 게시글 등록
+  /**
+   * 게시글 생성
+   *
+   * @param request 게시글 생성 요청 DTO
+   * @return 생성된 게시글 ID
+   */
   @SuppressWarnings("null")
   @PreAuthorize("isAuthenticated()")
   @PostMapping
@@ -53,7 +61,14 @@ public class PostController {
         .body(responseBody);
   }
 
-  // [GET] 모든 게시글 목록 조회
+  /**
+   * 게시글 목록 조회
+   *
+   * @param condition 게시글 검색 조건 DTO
+   * @param page      페이지 번호 (0부터 시작)
+   * @param size      페이지당 게시글 수
+   * @return 게시글 DTO 목록
+   */
   @GetMapping
   public ResponseEntity<List<PostListResponse>> getPosts(
       @ModelAttribute PostSearchCondition condition,
@@ -62,20 +77,36 @@ public class PostController {
     return ResponseEntity.ok(postService.getAllPosts(condition, page, size));
   }
 
-  // [GET] 특정 게시글 상세 조회
+  /**
+   * 게시글 상세 조회
+   *
+   * @param postId 게시글 ID
+   * @return 게시글 상세 DTO
+   */
   @GetMapping("/{postId}")
   public ResponseEntity<PostDetailResponse> getPost(@PathVariable Long postId) {
     return ResponseEntity.ok(postService.getPostById(postId));
   }
 
-  // [GET] 게시글 총 건수 조회
+  /**
+   * 게시글 총 건수 조회
+   *
+   * @param condition 게시글 검색 조건 DTO
+   * @return 게시글 총 건수
+   */
   @GetMapping("/count")
   public ResponseEntity<Long> getPostsCount(
       @ModelAttribute PostSearchCondition condition) {
     return ResponseEntity.ok(postService.getAllPostsCount(condition));
   }
 
-  // [PUT] 특정 게시글 수정
+  /**
+   * 게시글 수정
+   *
+   * @param postId  게시글 ID
+   * @param request 게시글 수정 요청 DTO
+   * @return 수정된 게시글 ID와 성공 메시지
+   */
   @PreAuthorize("isAuthenticated()")
   @PutMapping("/{postId}")
   public ResponseEntity<Map<String, Object>> updatePost(
@@ -91,7 +122,12 @@ public class PostController {
     return ResponseEntity.ok(responseBody);
   }
 
-  // [DELETE] 특정 게시글 삭제
+  /**
+   * 게시글 삭제
+   *
+   * @param postId 게시글 ID
+   * @return 204 No Content
+   */
   @PreAuthorize("isAuthenticated()")
   @DeleteMapping("/{postId}")
   public ResponseEntity<Void> deletePost(@PathVariable Long postId) {

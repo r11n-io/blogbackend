@@ -17,6 +17,9 @@ import sw.blog.blogbackend.auth.dto.TokenDto;
 import sw.blog.blogbackend.auth.dto.TokenResponse;
 import sw.blog.blogbackend.auth.service.AuthService;
 
+/**
+ * 인증 컨트롤러
+ */
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -24,6 +27,12 @@ public class AuthController {
 
   private final AuthService authService;
 
+  /**
+   * 사용자 로그인
+   * 
+   * @param loginRequest 로그인 요청 DTO
+   * @return 로그인 성공 시 액세스 토큰과 리프레시 토큰을 포함한 응답
+   */
   @SuppressWarnings("null")
   @PostMapping("/login")
   public ResponseEntity<TokenResponse> authenticateUser(
@@ -43,6 +52,12 @@ public class AuthController {
         .body(response);
   }
 
+  /**
+   * 액세스 토큰 갱신
+   * 
+   * @param refreshTokenCookie 리프레시 토큰이 담긴 쿠키
+   * @return 새로운 액세스 토큰과 사용자 ID를 포함한 응답
+   */
   @PostMapping("/refresh")
   public ResponseEntity<TokenResponse> refreshToken(
       @CookieValue(name = "refreshToken") String refreshTokenCookie) {

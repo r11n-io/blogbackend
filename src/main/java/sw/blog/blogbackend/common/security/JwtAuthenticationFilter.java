@@ -19,6 +19,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import sw.blog.blogbackend.common.security.service.CustomUserDetailService;
 
+/**
+ * JWT 인증 필터 클래스<br>
+ *
+ * - HTTP 요청에서 JWT 토큰을 추출하여 유효성을 검사하고, 유효한 경우 Spring Security Context에 인증 정보를
+ * 설정하는 역할
+ */
 @Component
 @Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -32,6 +38,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     this.customUserDetailService = customUserDetailService;
   }
 
+  /**
+   * HTTP 요청에서 JWT 토큰을 추출하여 유효성을 검사하고, 유효한 경우 Spring Security Context에 인증 정보를 설정
+   * 
+   * @param request     HTTP 요청 객체
+   * @param response    HTTP 응답 객체
+   * @param filterChain 필터 체인 객체
+   * @throws ServletException 예외 발생 시
+   * @throws IOException      예외 발생 시
+   */
   @SuppressWarnings("null")
   @Override
   protected void doFilterInternal(HttpServletRequest request,
@@ -42,7 +57,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       String jwt = getJwtFromRequest(request);
 
       if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
-        String userEmail = jwtTokenProvider.getIdenfierFromJWT(jwt);
+        String userEmail = jwtTokenProvider.getIdentifierFromJWT(jwt);
         UserDetails userDetails = customUserDetailService.loadUserByUsername(userEmail);
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
             userDetails, null, userDetails.getAuthorities());
@@ -59,7 +74,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     filterChain.doFilter(request, response);
   }
 
-  // HTTP 헤더에서 JWT 토큰 문자열 추출
+  /**
+   * HTTP 요청에서 JWT 토큰 추출
+   *
+   * @param httpServletRequest HTTP 요청 객체
+   * @return String JWT 토큰 문자열, 존재하지 않으면 null 반환
+   */
   private String getJwtFromRequest(HttpServletRequest httpServletRequest) {
     String bearerToken = httpServletRequest.getHeader("Authorization");
 

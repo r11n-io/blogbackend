@@ -32,6 +32,10 @@ import sw.blog.blogbackend.series.repository.SeriesRepository;
 import sw.blog.blogbackend.tag.entity.Tag;
 import sw.blog.blogbackend.tag.repository.TagRepository;
 
+/**
+ * 게시글(Post) 서비스.<br>
+ * - 태그, 시리즈, 이미지 관리 통합 처리
+ */
 @Service
 @Transactional(readOnly = true) // 읽기 전용
 @RequiredArgsConstructor
@@ -43,9 +47,14 @@ public class PostService {
   private final SeriesRepository seriesRepository;
   private final FileRepository fileRepository;
 
-  // 새 게시글 저장
-  @Transactional
+  /**
+   * 게시글 생성
+   *
+   * @param request 게시글 생성 요청 DTO
+   * @return 생성된 게시글 엔티티
+   */
   @SuppressWarnings("null")
+  @Transactional
   public Post createPost(PostCreateRequest request) {
     // 게시글 & 태그
     Set<Tag> tags = getOrCreateTag(request.getTags());
@@ -72,9 +81,70 @@ public class PostService {
     return savedPost;
   }
 
-  // 게시글 수정
-  @Transactional
+  /**
+   * 전체 게시글 목록 조회 (페이징)
+   * 
+   * @param condition 검색 조건 DTO
+   * @param page      페이지 번호 (0부터 시작)
+   * @param size      페이지당 게시글 수
+   * @return 게시글 DTO 목록
+   */
+  public List<PostListResponse> getAllPosts(
+      PostSearchCondition condition, int page, int size) {
+    // 정렬, 페이징, 검색조건 설정
+    var sort = Sort.by(Sort.Direction.DESC, "createAt");
+    var pageable = PageRequest.of(page, size, sort);
+    Specification<Post> spec = PostSpecification.buildSpecification(condition);
+
+    List<Post> posts = postRepository.findAll(spec, pageable).getContent();
+
+    return posts.stream()
+        .map(PostListResponse::from)
+        .collect(Collectors.toList());
+  }
+
+  /**
+   * 특정 게시글 상세 조회
+   *
+   * @param id 게시글 ID
+   * @return 게시글 상세 DTO
+   * @exception IllegalArgumentException  ID 파라미터가 null일 때
+   * @exception ResourceNotFoundException 해당 ID의 게시글이 존재하지 않을 때
+   */
+  public PostDetailResponse getPostById(Long id) {
+    if (id == null) {
+      throw new IllegalArgumentException("ID 파라미터가 누락되었습니다.");
+    }
+
+    Post post = postRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("게시글", id));
+
+    return PostDetailResponse.from(post);
+  }
+
+  /**
+   * 전체 게시글 총 건수 조회
+   *
+   * @param condition 게시글 검색 조건 DTO
+   * @return 게시글 총 건수
+   */
+  public long getAllPostsCount(PostSearchCondition condition) {
+    Specification<Post> spec = PostSpecification.buildSpecification(condition);
+
+    return postRepository.count(spec);
+  }
+
+  /**
+   * 게시글 수정
+   *
+   * @param postId  게시글 ID
+   * @param request 게시글 수정 요청 DTO
+   * @return 수정된 게시글 엔티티
+   * @exception IllegalArgumentException  ID 파라미터가 null, 또는 요청 DTO의 필수값이 누락
+   * @exception ResourceNotFoundException 해당 ID의 게시글이 존재하지 않을 때
+   */
   @SuppressWarnings("null")
+  @Transactional
   public Post updatePost(Long postId, PostUpdateRequest request) {
     // 게시글 & 태그
     if (postId == null) {
@@ -119,63 +189,13 @@ public class PostService {
     return post;
   }
 
-  // [게시글 저장, 수정] 태그 리스트 -> 셋 변환
-  private Set<Tag> getOrCreateTag(List<String> tagNames) {
-    if (tagNames == null || tagNames.isEmpty()) {
-      return new HashSet<>();
-    }
-
-    Set<String> uniqueTagNames = new HashSet<>(tagNames);
-    Set<Tag> tags = uniqueTagNames.stream()
-        .map(tagName -> tagName.trim())
-        .filter(tagName -> !tagName.isEmpty())
-        .map(tagName -> {
-          Optional<Tag> existingTag = tagRepository.findByName(tagName);
-
-          return existingTag.orElseGet(() -> {
-            return new Tag(tagName);
-          });
-        })
-        .collect(Collectors.toSet());
-
-    return tags;
-  }
-
-  // 전체 게시글 목록 조회 (페이징)
-  public List<PostListResponse> getAllPosts(
-      PostSearchCondition condition, int page, int size) {
-    // 정렬, 페이징, 검색조건 설정
-    var sort = Sort.by(Sort.Direction.DESC, "createAt");
-    var pageable = PageRequest.of(page, size, sort);
-    Specification<Post> spec = PostSpecification.buildSpecification(condition);
-
-    // 목록 조회
-    List<Post> posts = postRepository.findAll(spec, pageable).getContent();
-
-    return posts.stream()
-        .map(PostListResponse::from)
-        .collect(Collectors.toList());
-  }
-
-  // 특정 게시글 상세 조회
-  public PostDetailResponse getPostById(Long id) {
-    if (id == null) {
-      throw new IllegalArgumentException("ID 파라미터가 누락되었습니다.");
-    }
-
-    Post post = postRepository.findById(id)
-        .orElseThrow(() -> new ResourceNotFoundException("게시글", id));
-
-    return PostDetailResponse.from(post);
-  }
-
-  // 전체 게시글 총 건수 조회
-  public long getAllPostsCount(PostSearchCondition condition) {
-    Specification<Post> spec = PostSpecification.buildSpecification(condition);
-    return postRepository.count(spec);
-  }
-
-  // 게시글 삭제
+  /**
+   * 게시글 삭제
+   *
+   * @param id 게시글 ID
+   * @exception IllegalArgumentException  ID 파라미터가 null일 때
+   * @exception ResourceNotFoundException 해당 ID의 게시글이 존재하지 않을 때
+   */
   @SuppressWarnings("null")
   @Transactional
   public void deletePost(Long id) {
@@ -209,5 +229,32 @@ public class PostService {
     }
 
     postRepository.delete(post);
+  }
+
+  /**
+   * 태그 리스트를 받아서 존재하지 않으면 생성하여 반환
+   *
+   * @param tagNames 태그 이름 리스트
+   * @return 태그 엔티티 셋
+   */
+  private Set<Tag> getOrCreateTag(List<String> tagNames) {
+    if (tagNames == null || tagNames.isEmpty()) {
+      return new HashSet<>();
+    }
+
+    Set<String> uniqueTagNames = new HashSet<>(tagNames);
+    Set<Tag> tags = uniqueTagNames.stream()
+        .map(tagName -> tagName.trim())
+        .filter(tagName -> !tagName.isEmpty())
+        .map(tagName -> {
+          Optional<Tag> existingTag = tagRepository.findByName(tagName);
+
+          return existingTag.orElseGet(() -> {
+            return new Tag(tagName);
+          });
+        })
+        .collect(Collectors.toSet());
+
+    return tags;
   }
 }

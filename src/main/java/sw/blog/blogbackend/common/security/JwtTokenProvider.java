@@ -19,6 +19,11 @@ import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
 import sw.blog.blogbackend.common.config.JwtConfig;
 
+/**
+ * JWT 토큰 제공자 클래스<br>
+ *
+ * - JWT 토큰 생성, 검증, 사용자 식별자 추출 등의 기능을 담당하는 유틸리티 클래스
+ */
 @Component
 @Slf4j
 public class JwtTokenProvider {
@@ -30,14 +35,12 @@ public class JwtTokenProvider {
     this.jwtConfig = jwtConfig;
   }
 
-  // 시크릿 키 디코딩
-  private SecretKey getSigningKey() {
-    byte[] keyBytes = Decoders.BASE64.decode(this.jwtConfig.getSecret());
-
-    return Keys.hmacShaKeyFor(keyBytes);
-  }
-
-  // Jwt 토큰 생성
+  /**
+   * 액세스 토큰 생성
+   *
+   * @param authentication 인증 정보
+   * @return String 생성된 액세스 토큰
+   */
   public String createAccessToken(Authentication authentication) {
     String userIdentifier = authentication.getName();
     Date now = new Date();
@@ -51,6 +54,12 @@ public class JwtTokenProvider {
         .compact();
   }
 
+  /**
+   * 액세스 토큰 생성
+   *
+   * @param subject 사용자 식별자
+   * @return String 생성된 액세스 토큰
+   */
   public String createAccessToken(String subject) {
     Date now = new Date();
     Date expiryDate = new Date(now.getTime() + jwtConfig.getExpirationMs());
@@ -63,8 +72,13 @@ public class JwtTokenProvider {
         .compact();
   }
 
-  // 토큰에서 사용자 식별자 추출
-  public String getIdenfierFromJWT(String token) {
+  /**
+   * JWT 토큰에서 사용자 식별자 추출
+   *
+   * @param token JWT 토큰 문자열
+   * @return String 사용자 식별자
+   */
+  public String getIdentifierFromJWT(String token) {
     Claims claims = Jwts.parserBuilder()
         .setSigningKey(getSigningKey())
         .build()
@@ -74,7 +88,12 @@ public class JwtTokenProvider {
     return claims.getSubject();
   }
 
-  // JWT 토큰 유효성 검증
+  /**
+   * JWT 토큰 유효성 검증
+   *
+   * @param authToken JWT 토큰 문자열
+   * @return boolean 유효성 검증 결과
+   */
   public boolean validateToken(String authToken) {
     try {
       Jwts.parserBuilder()
@@ -96,7 +115,12 @@ public class JwtTokenProvider {
     return false;
   }
 
-  // 리프레쉬 토큰 생성
+  /**
+   * 리프레쉬 토큰 생성
+   *
+   * @param subject 사용자 식별자
+   * @return String 생성된 리프레쉬 토큰
+   */
   public String createRefreshToken(String subject) {
     Date now = new Date();
     Date expiryDate = new Date(now.getTime() + refreshTokenExpirationMs);
@@ -109,8 +133,24 @@ public class JwtTokenProvider {
         .compact();
   }
 
-  // 토큰 만료 시간 반환
+  /**
+   * 리프레쉬 토큰 만료 시간 반환
+   *
+   * @return Instant 리프레쉬 토큰 만료 시간
+   */
   public Instant getRefreshTokenExpiryDate() {
     return Instant.now().plusMillis(refreshTokenExpirationMs);
   }
+
+  /**
+   * JWT 서명에 사용할 SecretKey 객체 생성
+   *
+   * @return SecretKey JWT 서명에 사용할 SecretKey 객체
+   */
+  private SecretKey getSigningKey() {
+    byte[] keyBytes = Decoders.BASE64.decode(this.jwtConfig.getSecret());
+
+    return Keys.hmacShaKeyFor(keyBytes);
+  }
+
 }

@@ -9,6 +9,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import lombok.RequiredArgsConstructor;
 import sw.blog.blogbackend.file.config.FileProperties;
 
+/**
+ * 웹 MVC 설정 클래스
+ */
 @Configuration
 @RequiredArgsConstructor
 public class WebMvcConfig implements WebMvcConfigurer {
@@ -19,7 +22,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
   private final FileProperties fileProperties;
 
   /**
-   * 로컬 파일 시스템에 저장된 파일을 제공하기 위한 리소스 핸들러 설정
+   * 정적 리소스 핸들러 설정
+   *
+   * @param registry ResourceHandlerRegistry
    */
   @SuppressWarnings("null")
   @Override
@@ -28,6 +33,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
         .addResourceLocations("file:" + fileProperties.getPath().getLocal());
   }
 
+  /**
+   * CORS 매핑 설정
+   *
+   * @param registry CorsRegistry
+   */
   @SuppressWarnings("null")
   @Override
   public void addCorsMappings(CorsRegistry registry) {

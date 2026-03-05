@@ -11,6 +11,9 @@ import lombok.RequiredArgsConstructor;
 import sw.blog.blogbackend.tag.dto.TagResponse;
 import sw.blog.blogbackend.tag.service.TagService;
 
+/**
+ * 태그 컨트롤러
+ */
 @RestController
 @RequestMapping("/api/tags")
 @RequiredArgsConstructor
@@ -18,7 +21,11 @@ public class TagController {
 
   private final TagService tagService;
 
-  // [GET] /api/tags 태그 전체 목록
+  /**
+   * 전체 태그 조회
+   * 
+   * @return 전체 태그 목록
+   */
   @GetMapping
   public ResponseEntity<List<TagResponse>> getAllTags() {
     return ResponseEntity.ok(tagService.getAllTags());

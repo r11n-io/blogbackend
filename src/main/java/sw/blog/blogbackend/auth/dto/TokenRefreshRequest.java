@@ -8,4 +8,5 @@ import lombok.Setter;
 public class TokenRefreshRequest {
 
   private String refreshToken;
+
 }

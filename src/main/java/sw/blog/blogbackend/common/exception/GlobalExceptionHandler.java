@@ -10,11 +10,20 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-// 모든 @RestController 예외 잡음
+/**
+ * 글로벌 예외 처리 클래스<br>
+ *
+ * - @RestControllerAdvice를 사용하여 모든 @RestController에서 발생하는 예외를 처리
+ */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-  // 유효성 검사 실패
+  /**
+   * 유효성 검사 실패 예외 처리
+   * 
+   * @param ex MethodArgumentNotValidException
+   * @return 400 Bad Request와 함께 문제 상세 정보 반환
+   */
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<ProblemDetail> handleValidationExceptions(
       MethodArgumentNotValidException ex) {
@@ -34,7 +43,12 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail);
   }
 
-  // 리소스 없음
+  /**
+   * 리소스 없음 예외 처리
+   *
+   * @param ex ResourceNotFoundException
+   * @return 404 Not Found와 함께 문제 상세 정보 반환
+   */
   @ExceptionHandler(ResourceNotFoundException.class)
   public ResponseEntity<ProblemDetail> handleResourceNotFoundException(
       ResourceNotFoundException ex) {
@@ -43,7 +57,12 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail);
   }
 
-  // 그 외 별도 처리되지 않는 예외
+  /**
+   * 모든 예외 처리
+   *
+   * @param ex Exception
+   * @return 500 Internal Server Error와 함께 문제 상세 정보 반환
+   */
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ProblemDetail> handleAllExceptions(Exception ex) {
 
