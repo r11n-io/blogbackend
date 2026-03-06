@@ -11,6 +11,9 @@ import sw.blog.blogbackend.file.entity.File;
 import sw.blog.blogbackend.file.repository.FileRepository;
 import sw.blog.blogbackend.file.storage.StorageProvider;
 
+/**
+ * 파일 서비스 클래스.
+ */
 @Service
 @RequiredArgsConstructor
 public class FileService {
@@ -18,6 +21,13 @@ public class FileService {
   private final FileRepository fileRepository;
   private final StorageProvider storageProvider;
 
+  /**
+   * 파일 업로드 및 메타데이터 저장
+   *
+   * @param file       업로드할 파일
+   * @param uploadPath 파일 업로드 경로
+   * @return 저장된 파일 엔티티
+   */
   @SuppressWarnings("null")
   @Transactional
   public File uploadAndSaveRecord(MultipartFile file, String uploadPath) {
@@ -39,4 +49,5 @@ public class FileService {
       throw new RuntimeException("파일 저장 중 오류 발생", e);
     }
   }
+
 }

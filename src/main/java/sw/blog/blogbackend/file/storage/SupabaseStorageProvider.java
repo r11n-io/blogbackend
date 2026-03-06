@@ -19,6 +19,10 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 import sw.blog.blogbackend.file.config.SupabaseProperties;
 
+/**
+ * Supabase 스토리지 제공자 클래스.<br>
+ * 프로덕션 환경에서 Supabase의 S3 호환 스토리지에 파일을 저장하기 위한 구현체.
+ */
 @Slf4j
 @Service
 @Profile("prod")
@@ -28,6 +32,14 @@ public class SupabaseStorageProvider implements StorageProvider {
   private final S3Client s3Client;
   private final SupabaseProperties supabaseProperties;
 
+  /**
+   * 파일 업로드
+   * 
+   * @param file 업로드할 파일
+   * @param path 업로드 경로
+   * @return 업로드된 파일의 URL
+   * @throws IOException 파일 저장 중 발생 예외
+   */
   @SuppressWarnings("null")
   @Override
   public String upload(MultipartFile file, String path) throws IOException {
@@ -55,6 +67,11 @@ public class SupabaseStorageProvider implements StorageProvider {
         fullPath);
   }
 
+  /**
+   * 파일 삭제
+   * 
+   * @param fileUrl 삭제할 파일의 URL
+   */
   @Override
   public void delete(String fileUrl) {
     DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()

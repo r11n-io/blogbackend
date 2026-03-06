@@ -15,6 +15,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import sw.blog.blogbackend.file.config.FileProperties;
 
+/**
+ * 로컬 스토리지 제공자 클래스.<br>
+ * 개발 환경에서 파일을 로컬 디스크에 저장하기 위한 구현체.
+ */
 @Slf4j
 @Service
 @Profile("dev")
@@ -23,6 +27,14 @@ public class LocalStorageProvider implements StorageProvider {
 
   private final FileProperties fileProperties;
 
+  /**
+   * 파일 업로드
+   * 
+   * @param file 업로드할 파일
+   * @param path 업로드 경로
+   * @return 업로드된 파일의 URL
+   * @throws IOException 파일 저장 중 발생 예외
+   */
   @SuppressWarnings("null")
   @Override
   public String upload(MultipartFile file, String path) throws IOException {
@@ -44,6 +56,11 @@ public class LocalStorageProvider implements StorageProvider {
     return "/files/" + path + "/" + savedFileName;
   };
 
+  /**
+   * 파일 삭제
+   * 
+   * @param fileUrl 삭제할 파일의 URL
+   */
   @Override
   public void delete(String fileUrl) {
     try {

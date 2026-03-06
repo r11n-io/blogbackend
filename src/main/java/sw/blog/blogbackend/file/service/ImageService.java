@@ -23,6 +23,9 @@ import sw.blog.blogbackend.file.repository.FileRepository;
 import sw.blog.blogbackend.file.storage.StorageProvider;
 import sw.blog.blogbackend.file.util.CustomByteArrayMultipartFile;
 
+/**
+ * 이미지 서비스 클래스.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor

@@ -12,6 +12,10 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.S3Configuration;
 
+/**
+ * S3 클라이언트 설정 클래스.<br>
+ * Supabase의 S3 호환 스토리지와 통신하기 위한 클라이언트를 구성.
+ */
 @Configuration
 @RequiredArgsConstructor
 public class S3Config {

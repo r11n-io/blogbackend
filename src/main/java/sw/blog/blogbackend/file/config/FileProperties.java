@@ -6,6 +6,9 @@ import org.springframework.stereotype.Component;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * 파일 업로드 관련 설정 관리 클래스.
+ */
 @Component
 @ConfigurationProperties(prefix = "upload")
 @Getter

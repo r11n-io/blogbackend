@@ -15,6 +15,9 @@ import sw.blog.blogbackend.file.dto.ImageResponse;
 import sw.blog.blogbackend.file.entity.File;
 import sw.blog.blogbackend.file.service.ImageService;
 
+/**
+ * 이미지 컨트롤러 클래스.
+ */
 @RestController
 @RequestMapping("/api/upload")
 @RequiredArgsConstructor
@@ -22,6 +25,13 @@ public class ImageController {
 
   private final ImageService imageService;
 
+  /**
+   * 이미지 업로드
+   *
+   * @param file 이미지 파일
+   * @return 이미지 업로드 결과 DTO
+   * @throws IOException 파일 저장 중 발생 예외
+   */
   @PreAuthorize("isAuthenticated()")
   @PostMapping("/image")
   public ResponseEntity<ImageResponse> uploadImage(
