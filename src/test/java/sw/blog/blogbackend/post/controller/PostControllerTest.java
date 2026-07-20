@@ -121,7 +121,7 @@ public class PostControllerTest {
 				.id(2L).title("게시글 2").content("Content 2").category("TEST").build());
 		List<PostListResponse> posts = Arrays.asList(post1, post2);
 
-		when(postService.getAllPosts(any(), eq(0), eq(8))).thenReturn(posts);
+		when(postService.getAllPosts(any(), eq(0), eq(8), eq(false))).thenReturn(posts);
 
 		mockMvc = MockMvcBuilders.standaloneSetup(new PostController(postService)).build();
 
@@ -176,13 +176,13 @@ public class PostControllerTest {
 	void whenGetPostsCount_thenReturnTotalCount() throws Exception {
 		long mockCount = 25L;
 
-		when(postService.getAllPostsCount(any())).thenReturn(mockCount);
+		when(postService.getAllPostsCount(any(), eq(false))).thenReturn(mockCount);
 
 		mockMvc.perform(get("/api/posts/count"))
 				.andDo(print())
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$").value(25L));
 
-		verify(postService, times(1)).getAllPostsCount(any());
+		verify(postService, times(1)).getAllPostsCount(any(), eq(false));
 	}
 }

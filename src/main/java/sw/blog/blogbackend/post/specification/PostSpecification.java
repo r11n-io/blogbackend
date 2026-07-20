@@ -20,23 +20,34 @@ public class PostSpecification {
    * @param condition 게시글 검색 조건 DTO
    * @return 게시글 검색 조건 스펙
    */
-  @SuppressWarnings("removal")
   public static Specification<Post> buildSpecification(
-      PostSearchCondition condition) {
+      PostSearchCondition condition, boolean isLoggedIn) {
+    Specification<Post> spec = isAccessiblePost(isLoggedIn);
+
     // 태그 -> 카테고리 -> 키워드 순 하나만 적용
     if (StringUtils.hasText(condition.getTagName())) {
-      return tagEquals(condition.getTagName());
+      spec = spec.and(tagEquals(condition.getTagName()));
     }
 
     if (StringUtils.hasText(condition.getCategory())) {
-      return categoryEquals(condition.getCategory());
+      spec = spec.and(categoryEquals(condition.getCategory()));
     }
 
     if (StringUtils.hasText(condition.getKeyword())) {
-      return keywordContains(condition.getKeyword());
+      spec = spec.and(keywordContains(condition.getKeyword()));
     }
 
-    return Specification.where(null);
+    return spec;
+  }
+
+  private static Specification<Post> isAccessiblePost(boolean isLoggedIn) {
+    return (root, query, criteriaBuilder) -> {
+      if (!isLoggedIn) {
+        return criteriaBuilder.equal(root.get("isPrivate"), false);
+      }
+
+      return criteriaBuilder.conjunction();
+    };
   }
 
   private static Specification<Post> tagEquals(String tagName) {

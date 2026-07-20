@@ -2,6 +2,8 @@ package sw.blog.blogbackend.post.dto;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -27,6 +29,7 @@ public class PostCreateRequest {
   @NotBlank(message = "분류는 필수입니다.")
   private String category;
 
+  @JsonProperty("isPrivate")
   private boolean isPrivate;
 
   private List<String> tags;

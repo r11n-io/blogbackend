@@ -2,6 +2,8 @@ package sw.blog.blogbackend.post.dto;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -9,12 +11,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class PostUpdateRequest {
 
   @NotBlank(message = "제목은 필수입니다.")
@@ -27,6 +31,7 @@ public class PostUpdateRequest {
   @NotBlank(message = "분류는 필수입니다.")
   private String category;
 
+  @JsonProperty("isPrivate")
   private boolean isPrivate;
 
   private List<String> tags;

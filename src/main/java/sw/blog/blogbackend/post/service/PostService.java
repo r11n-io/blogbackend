@@ -90,11 +90,11 @@ public class PostService {
    * @return 게시글 DTO 목록
    */
   public List<PostListResponse> getAllPosts(
-      PostSearchCondition condition, int page, int size) {
+      PostSearchCondition condition, int page, int size, boolean isLoggedIn) {
     // 정렬, 페이징, 검색조건 설정
     var sort = Sort.by(Sort.Direction.DESC, "createAt");
     var pageable = PageRequest.of(page, size, sort);
-    Specification<Post> spec = PostSpecification.buildSpecification(condition);
+    Specification<Post> spec = PostSpecification.buildSpecification(condition, isLoggedIn);
 
     List<Post> posts = postRepository.findAll(spec, pageable).getContent();
 
@@ -128,8 +128,8 @@ public class PostService {
    * @param condition 게시글 검색 조건 DTO
    * @return 게시글 총 건수
    */
-  public long getAllPostsCount(PostSearchCondition condition) {
-    Specification<Post> spec = PostSpecification.buildSpecification(condition);
+  public long getAllPostsCount(PostSearchCondition condition, boolean isLoggedIn) {
+    Specification<Post> spec = PostSpecification.buildSpecification(condition, isLoggedIn);
 
     return postRepository.count(spec);
   }
@@ -150,6 +150,8 @@ public class PostService {
     if (postId == null) {
       throw new IllegalArgumentException("ID 파라미터가 누락되었습니다.");
     }
+
+    System.out.println("###### ::: " + request.toString());
 
     Post post = postRepository.findById(postId)
         .orElseThrow(() -> new ResourceNotFoundException("게시글", postId));

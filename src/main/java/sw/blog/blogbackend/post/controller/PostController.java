@@ -7,6 +7,8 @@ import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import sw.blog.blogbackend.post.dto.PostCreateRequest;
 import sw.blog.blogbackend.post.dto.PostDetailResponse;
 import sw.blog.blogbackend.post.dto.PostListResponse;
@@ -34,6 +37,7 @@ import sw.blog.blogbackend.post.service.PostService;
 @RestController
 @RequestMapping("/api/posts")
 @RequiredArgsConstructor
+@Slf4j
 public class PostController {
 
   private final PostService postService;
@@ -73,8 +77,11 @@ public class PostController {
   public ResponseEntity<List<PostListResponse>> getPosts(
       @ModelAttribute PostSearchCondition condition,
       @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "8") int size) {
-    return ResponseEntity.ok(postService.getAllPosts(condition, page, size));
+      @RequestParam(defaultValue = "8") int size,
+      @AuthenticationPrincipal UserDetails userDetails) {
+    boolean isLoggedIn = userDetails != null;
+
+    return ResponseEntity.ok(postService.getAllPosts(condition, page, size, isLoggedIn));
   }
 
   /**
@@ -96,8 +103,11 @@ public class PostController {
    */
   @GetMapping("/count")
   public ResponseEntity<Long> getPostsCount(
-      @ModelAttribute PostSearchCondition condition) {
-    return ResponseEntity.ok(postService.getAllPostsCount(condition));
+      @ModelAttribute PostSearchCondition condition,
+      @AuthenticationPrincipal UserDetails userDetails) {
+    boolean isLoggedIn = userDetails != null;
+
+    return ResponseEntity.ok(postService.getAllPostsCount(condition, isLoggedIn));
   }
 
   /**

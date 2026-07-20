@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Builder;
 import lombok.Getter;
 import sw.blog.blogbackend.post.entity.Post;
@@ -17,6 +19,7 @@ public class PostListResponse {
   private String title;
   private String content;
   private String category;
+  @JsonProperty("isPrivate")
   private boolean isPrivate;
   private LocalDateTime createAt;
   private List<String> tags;

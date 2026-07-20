@@ -142,7 +142,7 @@ public class PostServiceTest {
 
     when(postRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(mockPage);
 
-    List<PostListResponse> actualPosts = postService.getAllPosts(condition, 0, 8);
+    List<PostListResponse> actualPosts = postService.getAllPosts(condition, 0, 8, false);
 
     assertThat(actualPosts).hasSize(2);
     assertThat(actualPosts.get(0).getTitle()).isEqualTo("게시글 1");
@@ -162,7 +162,7 @@ public class PostServiceTest {
     when(postRepository.findAll(any(Specification.class), any(Pageable.class)))
         .thenReturn(mockPage);
 
-    List<PostListResponse> actualPosts = postService.getAllPosts(condition, 0, 8);
+    List<PostListResponse> actualPosts = postService.getAllPosts(condition, 0, 8, false);
 
     assertThat(actualPosts).hasSize(2);
     verify(postRepository, times(1))
@@ -214,7 +214,7 @@ public class PostServiceTest {
 
     when(postRepository.count(any(Specification.class))).thenReturn(mockCount);
 
-    long actualCount = postService.getAllPostsCount(condition);
+    long actualCount = postService.getAllPostsCount(condition, false);
 
     assertThat(actualCount).isEqualTo(mockCount);
     verify(postRepository, times(1)).count(any(Specification.class));
@@ -229,7 +229,7 @@ public class PostServiceTest {
 
     when(postRepository.count(any(Specification.class))).thenReturn(mockCount);
 
-    long actualCount = postService.getAllPostsCount(condition);
+    long actualCount = postService.getAllPostsCount(condition, false);
 
     assertThat(actualCount).isEqualTo(mockCount);
     verify(postRepository, times(1)).count(any(Specification.class));
