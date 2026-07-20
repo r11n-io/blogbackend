@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Repository;
 
 import sw.blog.blogbackend.post.entity.Post;
 import sw.blog.blogbackend.series.entity.Series;
@@ -15,7 +14,6 @@ import sw.blog.blogbackend.tag.entity.Tag;
 /**
  * 게시글(Post) 리포지토리.
  */
-@Repository
 public interface PostRepository
     extends JpaRepository<Post, Long>, JpaSpecificationExecutor<Post> {
 

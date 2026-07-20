@@ -4,14 +4,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 import sw.blog.blogbackend.file.entity.File;
 
 /**
  * 파일 리포지토리
  */
-@Repository
 public interface FileRepository extends JpaRepository<File, Long> {
 
   /**
