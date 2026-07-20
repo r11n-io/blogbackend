@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import sw.blog.blogbackend.post.dto.PostCreateRequest;
 import sw.blog.blogbackend.post.dto.PostDetailResponse;
 import sw.blog.blogbackend.post.dto.PostListResponse;
@@ -37,7 +36,6 @@ import sw.blog.blogbackend.post.service.PostService;
 @RestController
 @RequestMapping("/api/posts")
 @RequiredArgsConstructor
-@Slf4j
 public class PostController {
 
   private final PostService postService;

@@ -151,8 +151,6 @@ public class PostService {
       throw new IllegalArgumentException("ID 파라미터가 누락되었습니다.");
     }
 
-    System.out.println("###### ::: " + request.toString());
-
     Post post = postRepository.findById(postId)
         .orElseThrow(() -> new ResourceNotFoundException("게시글", postId));
     Set<Tag> oldTags = new HashSet<>(post.getTags());
