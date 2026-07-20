@@ -8,7 +8,6 @@ import lombok.Builder;
 import lombok.Getter;
 import sw.blog.blogbackend.post.entity.Post;
 import sw.blog.blogbackend.series.entity.Series;
-import sw.blog.blogbackend.tag.entity.Tag;
 
 @Builder
 @Getter
@@ -27,7 +26,7 @@ public class PostDetailResponse {
 
   public static PostDetailResponse from(Post post) {
     List<String> tagNames = post.getTags().stream()
-        .map(Tag::getName)
+        .map(tag -> tag.getName())
         .collect(Collectors.toList());
     Series series = post.getSeries();
 
