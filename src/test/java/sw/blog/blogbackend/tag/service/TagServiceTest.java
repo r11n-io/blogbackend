@@ -28,14 +28,17 @@ public class TagServiceTest {
   private TagRepository tagRepository;
 
   @Test
-  void getAllTags_shouldReturnAllTagsAsDto() {
+  void getAllTags_default_allTagsAsDto() {
+    // given
     Tag tag1 = Tag.builder().tagId(1L).name("JUnit").build();
     Tag tag2 = Tag.builder().tagId(2L).name("TEST").build();
 
+    // when
     when(tagRepository.findAll()).thenReturn(Arrays.asList(tag1, tag2));
 
     List<TagResponse> result = tagService.getAllTags();
 
+    // then
     verify(tagRepository, times(1)).findAll();
     assertThat(result).hasSize(2);
     assertThat(result.get(0).getName()).isEqualTo("JUnit");

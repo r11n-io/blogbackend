@@ -28,7 +28,7 @@ public class ImageServiceTest {
   private FileProperties fileProperties;
 
   @Test
-  void uploadLocalFileTest() throws IOException {
+  void uploadPostImage_uploadLocalFile_saveFile() throws IOException {
     // 1. 진짜 1x1 픽셀 이미지 바이너리 생성
     BufferedImage whiteImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -53,4 +53,5 @@ public class ImageServiceTest {
 
     assertThat(Files.exists(actualPath)).isTrue();
   }
+
 }

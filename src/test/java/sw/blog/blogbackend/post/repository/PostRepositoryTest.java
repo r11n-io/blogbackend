@@ -35,7 +35,8 @@ public class PostRepositoryTest {
   private TestEntityManager testEntityManager;
 
   @Test
-  void givenPostWithTag_whenSaveAndFetch_thenRelationIsIntact() {
+  void saveAndFlush_postWithTag_relationIsIntact() {
+    // given
     Tag existingTag = new Tag("Spring boot");
     tagRepository.save(existingTag);
 
@@ -50,9 +51,10 @@ public class PostRepositoryTest {
         .tags(tags)
         .build();
 
+    // when
     Post savedPost = postRepository.saveAndFlush(newPost);
 
-    // 검증(Then)
+    // then
     Long postId = savedPost.getId();
 
     assertThat(postId).isNotNull();
@@ -74,18 +76,23 @@ public class PostRepositoryTest {
   }
 
   @Test
-  void findAll_withEntityGraph_shouldFetchTagsEagerly() {
+  void findAll_withEntityGraph_fetchTagsEagerly() {
     // 미리 테이블에 넣어둔 데이터로 진행
 
+    // given
     List<Post> posts = postRepository.findAll();
     Post fetchedPost = posts.stream()
         .filter(p -> p.getId().equals(999L))
         .findFirst()
         .orElseThrow();
 
+    // then
     assertDoesNotThrow(() -> {
       assertThat(fetchedPost.getTags()).hasSize(2);
     });
   }
 
+  // TODO: 시리즈 오름차순 조회 작성
+  // TODO: 시리즈 조회 작성
+  // TODO: 특정 게시물 조회 작성
 }

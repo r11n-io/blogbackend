@@ -59,7 +59,8 @@ public class SeriesControllerTest {
 
   @Test
   @WithMockUser(username = "junitUser", roles = { "USER" })
-  void createSeries_return201() throws Exception {
+  void createSeries_validRequest_return201() throws Exception {
+    // given
     SeriesCreateRequest createRequest = SeriesCreateRequest.builder()
         .title("컨트롤러 테스트 시리즈")
         .description("시리즈 컨트롤러 테스트 내용.")
@@ -70,8 +71,10 @@ public class SeriesControllerTest {
         .description(createRequest.getDescription())
         .build();
 
+    // when
     when(seriesService.createSeries(any())).thenReturn(mockSeries);
 
+    // then
     mockMvc.perform(
         post("/api/series")
             .with(csrf())
@@ -85,11 +88,13 @@ public class SeriesControllerTest {
   }
 
   @Test
-  void createSeries_return400() throws Exception {
+  void createSeries_invalidRequest_return400() throws Exception {
+    // given
     SeriesCreateRequest invalidRequest = SeriesCreateRequest.builder()
         .title(null).description("비정상입니다.")
         .build();
 
+    // then
     mockMvc.perform(
         post("/api/series")
             .contentType(MediaType.APPLICATION_JSON)
@@ -101,45 +106,17 @@ public class SeriesControllerTest {
   }
 
   @Test
-  void deleteSeries_return204() throws Exception {
-    Long seriesId = 666L;
-
-    // 호출 시 아무것도 안하고 정상종료
-    doNothing().when(seriesService).deleteSeries(seriesId);
-
-    mockMvc.perform(
-        delete("/api/series/{seriesId}", seriesId)
-            .contentType(MediaType.APPLICATION_JSON))
-        .andDo(print())
-        .andExpect(status().isNoContent());
-
-    verify(seriesService, times(1)).deleteSeries(seriesId);
-  }
-
-  @Test
-  void deleteSeries_return404() throws Exception {
-    Long nonExistenId = 666L;
-
-    doThrow(new ResourceNotFoundException("시리즈", nonExistenId))
-        .when(seriesService).deleteSeries(nonExistenId);
-
-    mockMvc.perform(
-        delete("/api/series/{seriesId}", nonExistenId)
-            .contentType(MediaType.APPLICATION_JSON))
-        .andDo(print())
-        .andExpect(status().isNotFound());
-
-  }
-
-  @Test
-  void getAllSeries_return200AndList() throws Exception {
+  void getAllSeries_default_return200AndList() throws Exception {
+    // given
     SeriesResponse mockSeries1 = SeriesResponse.builder()
         .seriesId(991L).title("컨트롤러 테스트 1")
         .build();
     List<SeriesResponse> mockList = Arrays.asList(mockSeries1);
 
+    // when
     when(seriesService.getAllSeries()).thenReturn(mockList);
 
+    // then
     mockMvc.perform(
         get("/api/series")
             .contentType(MediaType.APPLICATION_JSON))
@@ -152,7 +129,8 @@ public class SeriesControllerTest {
   }
 
   @Test
-  void getSeriesWithPosts_return200() throws Exception {
+  void getSeriesWithPosts_seriesId_return200AndPosts() throws Exception {
+    // given
     Long seriesId = 999L;
     SeriesDetailResponse mockDetail = SeriesDetailResponse.builder()
         .seriesId(seriesId)
@@ -161,8 +139,10 @@ public class SeriesControllerTest {
         .build();
     mockDetail.setPosts(List.of());
 
+    // when
     when(seriesService.getSeriesWithPosts(seriesId)).thenReturn(mockDetail);
 
+    // then
     mockMvc.perform(
         get("/api/series/{seriesId}", seriesId)
             .contentType(MediaType.APPLICATION_JSON))
@@ -175,18 +155,58 @@ public class SeriesControllerTest {
   }
 
   @Test
-  void getSeriesWithPosts_return404() throws Exception {
-    Long nonExistenSeriesId = 888L;
+  void getSeriesWithPosts_nonExistentId_return404() throws Exception {
+    // given
+    Long nonExistentSeriesId = 888L;
 
-    when(seriesService.getSeriesWithPosts(nonExistenSeriesId))
-        .thenThrow(new ResourceNotFoundException("시리즈", nonExistenSeriesId));
+    // when
+    when(seriesService.getSeriesWithPosts(nonExistentSeriesId))
+        .thenThrow(new ResourceNotFoundException("시리즈", nonExistentSeriesId));
 
+    // then
     mockMvc.perform(
-        get("/api//series/{seriesId}", nonExistenSeriesId)
+        get("/api/series/{seriesId}", nonExistentSeriesId)
             .contentType(MediaType.APPLICATION_JSON))
         .andDo(print())
         .andExpect(status().isNotFound());
 
-    verify(seriesService, times(1)).getSeriesWithPosts(nonExistenSeriesId);
+    verify(seriesService, times(1)).getSeriesWithPosts(nonExistentSeriesId);
   }
+
+  // FIXME: 뭔가 이상한데..
+  @Test
+  void deleteSeries_seriesId_return204() throws Exception {
+    // given
+    Long seriesId = 666L;
+
+    // when
+    doNothing().when(seriesService).deleteSeries(seriesId);
+
+    // then
+    mockMvc.perform(
+        delete("/api/series/{seriesId}", seriesId)
+            .contentType(MediaType.APPLICATION_JSON))
+        .andDo(print())
+        .andExpect(status().isNoContent());
+
+    verify(seriesService, times(1)).deleteSeries(seriesId);
+  }
+
+  @Test
+  void deleteSeries_seriesId_return404() throws Exception {
+    // given
+    Long nonExistentId = 666L;
+
+    // when
+    doThrow(new ResourceNotFoundException("시리즈", nonExistentId))
+        .when(seriesService).deleteSeries(nonExistentId);
+
+    // then
+    mockMvc.perform(
+        delete("/api/series/{seriesId}", nonExistentId)
+            .contentType(MediaType.APPLICATION_JSON))
+        .andDo(print())
+        .andExpect(status().isNotFound());
+  }
+
 }

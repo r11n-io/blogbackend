@@ -9,9 +9,8 @@ import org.junit.jupiter.api.Test;
 
 public class MarkdownParserTest {
 
-  // 단일 이미지 파싱
   @Test
-  void testSingleImageParsing() {
+  void extractImageUrls_singleImage_singleUrls() {
     String content = "게시글 내용 시작. ![대체 텍스트](https://cdn.com/image1.jpg) 내용 끝.";
     List<String> urls = MarkdownParser.extractImageUrls(content);
 
@@ -19,9 +18,8 @@ public class MarkdownParserTest {
     assertEquals("https://cdn.com/image1.jpg", urls.get(0));
   }
 
-  // 다중 이미지 파싱
   @Test
-  void testMultipleImagesParsing() {
+  void extractImageUrls_multipleImages_multipleUrls() {
     String content = "첫 번째 이미지: ![로고](http://a.com/logo.png). 두 번째: ![사진](https://b.com/photo.gif).";
     List<String> urls = MarkdownParser.extractImageUrls(content);
 
@@ -30,9 +28,8 @@ public class MarkdownParserTest {
     assertTrue(urls.contains("https://b.com/photo.gif"));
   }
 
-  // 이미지 URL 내부 괄호 포함 (특수상황 정규식 안전 확인)
   @Test
-  void testUriWithParenthesesInQuery() {
+  void extractImageUrls_uriWithParenthesesInQuery_singleUrls() {
     String encodedUrl = "https://example.com/data?id=123&p=%28param%29";
     String content = "이미지: ![test](" + encodedUrl + ").";
     List<String> urls = MarkdownParser.extractImageUrls(content);
@@ -41,18 +38,16 @@ public class MarkdownParserTest {
     assertEquals(encodedUrl, urls.get(0));
   }
 
-  // 이미지 없는 경우
   @Test
-  void testNoImagePresent() {
+  void extractImageUrls_noImage_emptyList() {
     String content = "단순 텍스트 내용입니다. 링크도 없습니다.";
     List<String> urls = MarkdownParser.extractImageUrls(content);
 
     assertTrue(urls.isEmpty());
   }
 
-  // 빈 문자열, null
   @Test
-  void testNullOrEmptyInput() {
+  void extractImageUrls_nullOrEmptyInput_emptyList() {
     assertTrue(MarkdownParser.extractImageUrls(null).isEmpty());
     assertTrue(MarkdownParser.extractImageUrls("").isEmpty());
     assertTrue(MarkdownParser.extractImageUrls("      ").isEmpty());

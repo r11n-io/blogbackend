@@ -43,12 +43,15 @@ public class SeriesServiceTest {
   private SeriesService seriesService;
 
   @Test
-  void createSeries_suceess() {
+  void createSeries_series_success() {
+    // given
     String title = "JUnit5 테스트 개발기";
     String description = "백엔드 테스트를 이야기합니다.";
     Series series = Series.builder()
         .seriesId(999L).title(title).description(description)
         .build();
+
+    // when
     when(seriesRepository.save(any(Series.class))).thenReturn(series);
 
     SeriesCreateRequest createRequest = SeriesCreateRequest.builder()
@@ -56,6 +59,7 @@ public class SeriesServiceTest {
         .build();
     Series newSeries = seriesService.createSeries(createRequest);
 
+    // then
     verify(seriesRepository, times(1)).save(any(Series.class));
     assertThat(newSeries.getSeriesId()).isEqualTo(999L);
     assertThat(newSeries.getTitle()).isEqualTo(title);
@@ -73,79 +77,43 @@ public class SeriesServiceTest {
   }
 
   @Test
-  void deleteSeries_withNoPost_success() {
-    Long seriesId = 666L;
-    Series mockSeries = createSeries(seriesId, "단일 시리즈 테스트");
-
-    when(seriesRepository.findById(seriesId)).thenReturn(Optional.of(mockSeries));
-    when(postRepository.findBySeries(mockSeries)).thenReturn(List.of());
-
-    seriesService.deleteSeries(seriesId);
-
-    verify(postRepository, never()).saveAll(anyList());
-    verify(seriesRepository, times(1)).delete(mockSeries);
-  }
-
-  @Test
-  void deleteSeries_withPosts_success() {
-    Long seriesId = 666L;
-    Series mockSeries = createSeries(seriesId, "연결 시리즈 테스트");
-
-    Post post1 = createPost(661L, mockSeries, 1);
-    Post post2 = createPost(662L, mockSeries, 2);
-    List<Post> postsInSeries = Arrays.asList(post1, post2);
-
-    when(seriesRepository.findById(seriesId)).thenReturn(Optional.of(mockSeries));
-    when(postRepository.findBySeries(mockSeries)).thenReturn(postsInSeries);
-
-    seriesService.deleteSeries(seriesId);
-
-    verify(postRepository, times(1)).saveAll(postsInSeries);
-    verify(seriesRepository, times(1)).delete(mockSeries);
-  }
-
-  @Test
-  void deleteSeries_notFound_throwsException() {
-    Long nonExistenId = 666L;
-
-    when(seriesRepository.findById(nonExistenId)).thenReturn(Optional.empty());
-
-    assertThrows(ResourceNotFoundException.class, () -> {
-      seriesService.deleteSeries(nonExistenId);
-    });
-
-    verify(seriesRepository, never()).delete(any(Series.class));
-  }
-
-  @Test
-  void getAllSeries_shouldReturnDtoList() {
+  void getAllSeries_default_dtoList() {
+    // given
     Series series1 = createSeries(777L, "JUnit Test 1");
     Series series2 = createSeries(777L, "JUnit Test 2");
     List<Series> mockList = Arrays.asList(series1, series2);
+
+    // when
     when(seriesRepository.findAll()).thenReturn(mockList);
 
     List<SeriesResponse> returnList = seriesService.getAllSeries();
 
+    // then
     verify(seriesRepository, times(1)).findAll();
     assertThat(returnList).hasSize(2);
     assertThat(returnList.get(0).getTitle()).isEqualTo("JUnit Test 1");
   }
 
   @Test
-  void getAllSeries_shouldReturnEmptyList() {
+  void getAllSeries_empty_emptyList() {
+    // when
     when(seriesRepository.findAll()).thenReturn(List.of());
 
     List<SeriesResponse> resultList = seriesService.getAllSeries();
 
+    // then
     verify(seriesRepository, times(1)).findAll();
     assertThat(resultList).isNotNull();
     assertThat(resultList).isEmpty();
   }
 
   @Test
-  void getSeriesWithPosts_shouldReturnSeriesDetail() {
+  void getSeriesWithPosts_seriesId_seriesDetail() {
+    // given
     Long seriesId = 777L;
     Series mockSeries = createSeries(seriesId, "JUnit Test 1");
+
+    // when
     when(seriesRepository.findById(seriesId)).thenReturn(Optional.of(mockSeries));
     List<Post> mockPosts = Arrays.asList(
         createPost(601L, mockSeries, 1),
@@ -155,6 +123,7 @@ public class SeriesServiceTest {
 
     SeriesDetailResponse result = seriesService.getSeriesWithPosts(seriesId);
 
+    // then
     verify(seriesRepository, times(1)).findById(seriesId);
     verify(postRepository, times(1)).findBySeriesOrderBySeriesOrderAsc(mockSeries);
 
@@ -163,23 +132,84 @@ public class SeriesServiceTest {
   }
 
   @Test
-  void getSeriesWithPosts_shouldThrowExceptionIfIdIsNull() {
+  void getSeriesWithPosts_seriesIdNull_throwException() {
+    // when
     assertThrows(IllegalArgumentException.class, () -> {
       seriesService.getSeriesWithPosts(null);
     });
 
+    // then
     verify(seriesRepository, never()).findById(anyLong());
   }
 
   @Test
-  void getSeriesWithPosts_shouldThrowExceptionIfNotFound() {
+  void getSeriesWithPosts_notFound_throwException() {
+    // given
     Long notExistenSeriesId = 666L;
+
+    // when
     when(seriesRepository.findById(notExistenSeriesId)).thenReturn((Optional.empty()));
 
     assertThrows(ResourceNotFoundException.class, () -> {
       seriesService.getSeriesWithPosts(notExistenSeriesId);
     });
 
+    // then
     verify(postRepository, never()).findBySeriesOrderBySeriesOrderAsc(any());
   }
+
+  @Test
+  void deleteSeries_withNoPost_success() {
+    // given
+    Long seriesId = 666L;
+    Series mockSeries = createSeries(seriesId, "단일 시리즈 테스트");
+
+    // when
+    when(seriesRepository.findById(seriesId)).thenReturn(Optional.of(mockSeries));
+    when(postRepository.findBySeries(mockSeries)).thenReturn(List.of());
+
+    seriesService.deleteSeries(seriesId);
+
+    // then
+    verify(postRepository, never()).saveAll(anyList());
+    verify(seriesRepository, times(1)).delete(mockSeries);
+  }
+
+  @Test
+  void deleteSeries_withPosts_success() {
+    // given
+    Long seriesId = 666L;
+    Series mockSeries = createSeries(seriesId, "연결 시리즈 테스트");
+
+    Post post1 = createPost(661L, mockSeries, 1);
+    Post post2 = createPost(662L, mockSeries, 2);
+    List<Post> postsInSeries = Arrays.asList(post1, post2);
+
+    // when
+    when(seriesRepository.findById(seriesId)).thenReturn(Optional.of(mockSeries));
+    when(postRepository.findBySeries(mockSeries)).thenReturn(postsInSeries);
+
+    seriesService.deleteSeries(seriesId);
+
+    // then
+    verify(postRepository, times(1)).saveAll(postsInSeries);
+    verify(seriesRepository, times(1)).delete(mockSeries);
+  }
+
+  @Test
+  void deleteSeries_notFound_throwsException() {
+    // given
+    Long nonExistenId = 666L;
+
+    // when
+    when(seriesRepository.findById(nonExistenId)).thenReturn(Optional.empty());
+
+    assertThrows(ResourceNotFoundException.class, () -> {
+      seriesService.deleteSeries(nonExistenId);
+    });
+
+    // then
+    verify(seriesRepository, never()).delete(any(Series.class));
+  }
+
 }

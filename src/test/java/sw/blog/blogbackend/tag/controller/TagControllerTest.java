@@ -31,9 +31,6 @@ public class TagControllerTest {
   @Autowired
   private MockMvc mockMvc;
 
-  // @Autowired
-  // private ObjectMapper objectMapper;
-
   @MockBean
   private TagService tagService;
 
@@ -45,12 +42,15 @@ public class TagControllerTest {
 
   @SuppressWarnings("null")
   @Test
-  void getAllTags_shouldReturnListOfTags() throws Exception {
+  void getAllTags_default_listOfTags() throws Exception {
+    // given
     TagResponse dto1 = TagResponse.builder().name("JUnit").build();
     TagResponse dto2 = TagResponse.builder().name("TEST").build();
 
+    // when
     when(tagService.getAllTags()).thenReturn(Arrays.asList(dto1, dto2));
 
+    // then
     mockMvc.perform(get("/api/tags")
         .contentType(MediaType.APPLICATION_JSON))
         .andDo(print())
@@ -60,4 +60,5 @@ public class TagControllerTest {
         .andExpect(jsonPath("$", hasSize(2)))
         .andExpect(jsonPath("$[0].name").value("JUnit"));
   }
+
 }

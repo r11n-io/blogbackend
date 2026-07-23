@@ -56,7 +56,6 @@ public class PostServiceTest {
   @Mock
   private FileRepository fileRepository;
 
-  // 테스트 대상 실제 객체 생성하고 @Mock 객체 미리 주입
   @InjectMocks
   private PostService postService;
 
@@ -75,15 +74,18 @@ public class PostServiceTest {
   }
 
   @Test
-  void giveNewTags_whenCreatePost_thenNewTagEntitiesAreCreated() {
+  void createPost_newTags_newTagEntitiesAreCreated() {
+    // given
     setupPostSaveMock();
     List<String> newTagNames = Arrays.asList(TAG_1, TAG_2);
     PostCreateRequest request = createMockRequest(newTagNames);
 
+    // when
     when(tagRepository.findByName(anyString())).thenReturn(Optional.empty());
 
     Post newPost = postService.createPost(request);
 
+    // then
     assertThat(newPost.getId()).isEqualTo(1L);
     verify(tagRepository, times(1)).findByName(TAG_1);
     verify(tagRepository, times(1)).findByName(TAG_2);
@@ -91,19 +93,21 @@ public class PostServiceTest {
 
   @SuppressWarnings("null")
   @Test
-  void givenExistingTags_whenCreatePost_thenExistingTagEntitiesAreReused() {
+  void createPost_existingTags_existingTagEntitiesAreReused() {
+    // given
     setupPostSaveMock();
     List<String> newTagNames = Arrays.asList(TAG_1, TAG_2);
     PostCreateRequest request = createMockRequest(newTagNames);
-
     Tag tag1 = new Tag(TAG_1);
     Tag tag2 = new Tag(TAG_2);
 
+    // when
     when(tagRepository.findByName(TAG_1)).thenReturn(Optional.of(tag1));
     when(tagRepository.findByName(TAG_2)).thenReturn(Optional.of(tag2));
 
     postService.createPost(request);
 
+    // then
     verify(tagRepository, times(1)).findByName(TAG_1);
     verify(tagRepository, times(1)).findByName(TAG_2);
     verify(postRepository, times(1)).save(argThat(post -> {
@@ -112,19 +116,21 @@ public class PostServiceTest {
   }
 
   @Test
-  void givenMixedAndDuplicateTags_whenCreatePost_thenCorrectProcessed() {
+  void createPost_mixedAndDuplicateTags_correctProcessed() {
+    // given
     setupPostSaveMock();
     String NEW_TAG = "Java";
     List<String> mixedTags = Arrays.asList(TAG_1, NEW_TAG, TAG_1, " ");
     PostCreateRequest request = createMockRequest(mixedTags);
-
     Tag existingTag = new Tag(TAG_1);
 
+    // when
     when(tagRepository.findByName(TAG_1)).thenReturn(Optional.of(existingTag));
     when(tagRepository.findByName(NEW_TAG)).thenReturn(Optional.empty());
 
     postService.createPost(request);
 
+    // then
     verify(tagRepository, times(1)).findByName(TAG_1);
     verify(tagRepository, times(1)).findByName(NEW_TAG);
     verify(tagRepository, never()).findByName(" ");
@@ -132,7 +138,8 @@ public class PostServiceTest {
 
   @SuppressWarnings({ "null", "unchecked" })
   @Test
-  void whenGetAllPostsWithPaging_thenReturnPagedPosts() {
+  void getAllPosts_defaultCondition_pagedPosts() {
+    // given
     PostSearchCondition condition = PostSearchCondition.builder().build();
     Pageable pageable = Pageable.ofSize(8).withPage(0);
     Post post1 = Post.builder().id(1L).title("게시글 1").content("Content 1").build();
@@ -140,10 +147,12 @@ public class PostServiceTest {
     List<Post> mockPosts = Arrays.asList(post1, post2);
     Page<Post> mockPage = new PageImpl<>(mockPosts);
 
+    // when
     when(postRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(mockPage);
 
     List<PostListResponse> actualPosts = postService.getAllPosts(condition, 0, 8, false);
 
+    // then
     assertThat(actualPosts).hasSize(2);
     assertThat(actualPosts.get(0).getTitle()).isEqualTo("게시글 1");
     verify(postRepository, times(1)).findAll(any(Specification.class), eq(pageable));
@@ -151,7 +160,8 @@ public class PostServiceTest {
 
   @SuppressWarnings({ "unchecked", "null" })
   @Test
-  void whenGetAllPostsWithCondition_thenReturnFilteredPosts() {
+  void getAllPosts_keywordCondition_filteredPosts() {
+    // given
     PostSearchCondition condition = PostSearchCondition.builder()
         .keyword("Test").build();
     Post post1 = Post.builder().id(1L).title("Test 게시글 1").content("Content 1").build();
@@ -159,37 +169,45 @@ public class PostServiceTest {
     List<Post> mockPosts = Arrays.asList(post1, post2);
     Page<Post> mockPage = new PageImpl<>(mockPosts);
 
+    // when
     when(postRepository.findAll(any(Specification.class), any(Pageable.class)))
         .thenReturn(mockPage);
 
     List<PostListResponse> actualPosts = postService.getAllPosts(condition, 0, 8, false);
 
+    // then
     assertThat(actualPosts).hasSize(2);
     verify(postRepository, times(1))
         .findAll(any(Specification.class), any(Pageable.class));
   }
 
   @Test
-  void givenValidId_whenGetPostById_thenReturnPost() {
+  void getPost_validId_post() {
+    // given
     Long postId = 10L;
     Post mockPost = Post.builder()
         .id(postId).title("상세조회 게시글").content("상세조회 컨텐츠").build();
 
+    // when
     when(postRepository.findById(postId)).thenReturn(Optional.of(mockPost));
 
     PostDetailResponse actualPost = postService.getPostById(postId);
 
+    // then
     assertThat(actualPost).isNotNull();
     assertThat(actualPost.getTitle()).isEqualTo("상세조회 게시글");
     verify(postRepository, times(1)).findById(postId);
   }
 
   @Test
-  void givenInvalidId_thenGetPostById_thenThrowException() {
+  void getPost_invalidId_postNotFound() {
+    // given
     Long invalidId = 99L;
 
+    // when
     when(postRepository.findById(invalidId)).thenReturn(Optional.empty());
 
+    // then
     assertThrows(ResourceNotFoundException.class, () -> {
       postService.getPostById(invalidId);
     });
@@ -208,37 +226,45 @@ public class PostServiceTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  void whenGetAllPostsCount_thenReturnCorrectCount() {
+  void getAllPostsCount_defaultCondition_count() {
+    // given
     PostSearchCondition condition = PostSearchCondition.builder().build();
     long mockCount = 15L;
 
+    // when
     when(postRepository.count(any(Specification.class))).thenReturn(mockCount);
 
     long actualCount = postService.getAllPostsCount(condition, false);
 
+    // then
     assertThat(actualCount).isEqualTo(mockCount);
     verify(postRepository, times(1)).count(any(Specification.class));
   }
 
   @SuppressWarnings("unchecked")
   @Test
-  void whenGetAllPostsCount_thenReturnCorrectCountWithSpecification() {
+  void getAllPostsCount_keywordCondition_count() {
+    // given
     PostSearchCondition condition = PostSearchCondition.builder()
         .keyword("Test").build();
     long mockCount = 20L;
 
+    // when
     when(postRepository.count(any(Specification.class))).thenReturn(mockCount);
 
     long actualCount = postService.getAllPostsCount(condition, false);
 
+    // then
     assertThat(actualCount).isEqualTo(mockCount);
     verify(postRepository, times(1)).count(any(Specification.class));
   }
 
+  // TODO: 수정 테스트 작성
+
   @SuppressWarnings("null")
   @Test
-  void givenPostWithTagsAndImages_whenDeletePost_thenCleanupSuccessfully() {
-    // 1. 가짜 데이터 준비
+  void deletePost_postWithTagsAndImages_success() {
+    // given
     Long postId = 1L;
     Tag tag1 = new Tag(TAG_1);
     Tag tag2 = new Tag(TAG_2);
@@ -249,22 +275,18 @@ public class PostServiceTest {
         .tags(new HashSet<>(Arrays.asList(tag1, tag2)))
         .build();
 
-    // Mock 동작 정의
+    // when
     when(postRepository.findById(postId)).thenReturn(Optional.of(mockPost));
 
-    // 이미지 Mock: 해당 포스트에 이미지가 1개 있다고 가정
     File mockFile = File.builder().originalFileName("test.webp").isUsed(true).build();
     when(fileRepository.findByPostId(postId)).thenReturn(Collections.singletonList(mockFile));
 
-    // 태그 카운트 Mock: TAG_1은 이 글만 쓰고 있고(1), TAG_2는 다른 글도 쓰고 있다고 가정(2)
     when(postRepository.countByTagsContaining(tag1)).thenReturn(1L);
     when(postRepository.countByTagsContaining(tag2)).thenReturn(2L);
 
-    // 2. 실행
     postService.deletePost(postId);
 
-    // 3. 검증
-    // A. 이미지 사용 해제 확인 (ImageService나 로직 내 필드 변경 확인)
+    // then
     assertThat(mockFile.isUsed()).isFalse();
     verify(tagRepository, times(1)).delete(tag1);
     verify(tagRepository, never()).delete(tag2);

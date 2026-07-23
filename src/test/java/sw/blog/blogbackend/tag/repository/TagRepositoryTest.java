@@ -20,32 +20,40 @@ public class TagRepositoryTest {
   private TagRepository tagRepository;
 
   @Test
-  void givenTagName_whenFindByName_thenReturnTag() {
+  void findByName_tagName_returnTag() {
+    // given
     String tagName = "JUNIT_TEST";
     Tag newTag = new Tag(tagName);
     tagRepository.save(newTag);
 
+    // when
     Optional<Tag> foundTag = tagRepository.findByName(tagName);
 
+    // then
     assertThat(foundTag).isPresent();
     assertThat(foundTag.get().getName()).isEqualTo(tagName);
   }
 
   @Test
-  void givenNonExistingTagName_whenFindByName_thenReturnEmpty() {
+  void findByName_nonExistingTagName_returnEmpty() {
+    // given
     Optional<Tag> foundTag = tagRepository.findByName("NonExistingTag");
 
+    // then
     assertThat(foundTag).isEmpty();
   }
 
   @Test
-  void givenSameTagName_whenSaveTwice_thenThrowsException() {
+  void findByName_sameTagName_throwsException() {
+    // given
     String tagName = "TwiceTest";
     Tag tag1 = new Tag(tagName);
     Tag tag2 = new Tag(tagName);
 
+    // when
     tagRepository.save(tag1);
 
+    // then
     assertThrows(RuntimeException.class, () -> {
       tagRepository.saveAndFlush(tag2);
     });
