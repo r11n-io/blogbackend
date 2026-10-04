@@ -25,7 +25,7 @@ import sw.blog.blogbackend.file.config.SupabaseProperties;
  */
 @Slf4j
 @Service
-@Profile("prod")
+@Profile({"prod", "gcp"})
 @RequiredArgsConstructor
 public class SupabaseStorageProvider implements StorageProvider {
 
