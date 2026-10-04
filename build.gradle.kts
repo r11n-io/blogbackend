@@ -33,6 +33,7 @@ dependencies {
 	implementation("net.coobird:thumbnailator:0.4.20")
 	implementation("org.sejda.imageio:webp-imageio:0.1.6")
 	implementation("software.amazon.awssdk:s3:2.20.0")
+	implementation("com.google.cloud.sql:postgres-socket-factory:1.30.0")
 	compileOnly("org.projectlombok:lombok")
 	runtimeOnly("org.postgresql:postgresql")
 	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
