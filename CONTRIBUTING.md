@@ -26,13 +26,17 @@
 
 ## 배포
 
-main에 push되면 Railway가 감지해서 Nixpacks로 자동 빌드·배포. 별도 수동 배포 단계 없음.
+main에 push되면 Cloud Build 트리거(`r11n-io-blog-backend-deploy`)가 `cloudbuild.yaml` 기준으로 자동 빌드·배포. 별도 수동 배포 단계 없음.
 
-> Cloud Run 전환 작업 진행 중 — 전환 완료 후 이 섹션을 Cloud Build 트리거 기준으로 갱신할 것.
+- 이미지: Artifact Registry(`asia-northeast3-docker.pkg.dev/r11n-io-blog/blog-backend`)에 커밋 SHA로 태깅되어 push
+- 배포 대상: Cloud Run 서비스 `blog-backend-run` (리전 `asia-northeast3`)
+- DB: Cloud SQL(`blog-db`), 소켓 팩토리로 연결 (IP 허용목록 불필요)
+- 시크릿(`DB_PASSWORD`, `JWT_SECRET`, `SUPABASE_STORAGE_*_KEY`)은 Secret Manager에서 주입
+- 빌드를 실행하는 서비스 계정(기본 Compute 계정)과 앱이 실행되는 서비스 계정(`blog-backend-run`)이 분리되어 있음 — 둘의 권한을 혼동하지 않을 것
 
 ## CI
 
-아직 없음. 머지 전 로컬 테스트 통과만으로 품질 체크를 대신한다. (프론트엔드처럼 GitHub Actions lint/build/test 파이프라인 구축은 추후 과제)
+빌드·배포 파이프라인은 있지만 테스트 게이트는 없음 — push하면 테스트 결과와 무관하게 바로 배포된다. 그래서 머지 전 로컬에서 `./gradlew test` 통과 확인이 특히 중요하다. (프론트엔드처럼 GitHub Actions lint/build/test 파이프라인으로 배포 전에 막는 건 추후 과제)
 
 ## Merge 방식
 
