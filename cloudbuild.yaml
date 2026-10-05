@@ -1,0 +1,28 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'asia-northeast3-docker.pkg.dev/$PROJECT_ID/blog-backend/blog-backend-run:$COMMIT_SHA'
+      - '-f'
+      - 'Dockerfile'
+      - '.'
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'asia-northeast3-docker.pkg.dev/$PROJECT_ID/blog-backend/blog-backend-run:$COMMIT_SHA'
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'blog-backend-run'
+      - '--image=asia-northeast3-docker.pkg.dev/$PROJECT_ID/blog-backend/blog-backend-run:$COMMIT_SHA'
+      - '--region=asia-northeast3'
+      - '--service-account=blog-backend-run@$PROJECT_ID.iam.gserviceaccount.com'
+
+images:
+  - 'asia-northeast3-docker.pkg.dev/$PROJECT_ID/blog-backend/blog-backend-run:$COMMIT_SHA'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
