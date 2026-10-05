@@ -49,6 +49,7 @@ public class SecurityConfig {
         .formLogin(formLogin -> formLogin.disable())
         .httpBasic(httpBasic -> httpBasic.disable())
         .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/api/health").permitAll()
             .requestMatchers("/api/auth/**").permitAll()
             .requestMatchers("/files/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/posts/**", "/api/tags/**", "/api/series/**").permitAll()
